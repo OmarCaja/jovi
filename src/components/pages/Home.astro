@@ -412,7 +412,8 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
     // Default markup is the fully lit wall. Motion only darkens it first when it is allowed,
     // so no-JS and reduced-motion visitors always see the photo.
     const dark = () => {
-      gsap.set(lit, { "--rx": "0%", "--ry": "0%" })
+      // Not 0%: Safari drops a zero-size mask gradient and shows the lit photo in full.
+      gsap.set(lit, { "--rx": "0.1%", "--ry": "0.1%" })
       gsap.set([glow, bulb], { opacity: 0 })
       gsap.set(veil, { opacity: 1 })
       gsap.set(spill, { "--sr": "0px", opacity: 0 })

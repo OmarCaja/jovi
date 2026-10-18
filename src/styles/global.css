@@ -126,6 +126,13 @@
 /* GSAP reveal targets start hidden only when JS + motion are allowed, so no-JS and reduced-motion users see content. */
 @media (prefers-reduced-motion: no-preference) {
   .js [data-reveal], .js [data-hero], .js [data-hero-image] img { opacity: 0; }
+  /* La casa starts with the lights off in CSS, not just from JS: iOS Safari otherwise paints
+     the lit defaults before (or instead of) the script's dark state. Mirrors dark() in Home.astro. */
+  .js .lamp-lit { --rx: 0.1%; --ry: 0.1%; }
+  .js .casa-spill { --sr: 0px; opacity: 0; }
+  .js [data-casa-veil] { opacity: 1; }
+  .js [data-lamp-glow], .js [data-lamp-bulb] { opacity: 0; }
+  .js [data-lamp-copy] > * { opacity: 0.04; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
