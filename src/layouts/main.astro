@@ -5,7 +5,6 @@ import { buttonVariants } from "@/components/ui/button"
 import { Image } from "astro:assets"
 import { address, hours, mapsUrl } from "@/lib/site"
 import bar from "@/assets/gallery/4.jpg"
-import { languages } from "@/i18n/ui"
 import { alternatePath, formatHours, getLangFromUrl, getTranslatedPath, getTranslations, withBase } from "@/i18n/utils"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { InstagramIcon, Location01Icon } from "@hugeicons/core-free-icons"
@@ -102,22 +101,21 @@ const pageSwap = {
             ))
           }
         </ul>
-        <div class="flex items-center gap-2 max-md:hidden">
+        <div class="flex items-center gap-2 max-md:gap-1">
           <a
             href={switchHref}
             hreflang={otherLang}
             lang={otherLang}
             aria-label={t("lang.switch")}
-            class="grid h-10 min-w-11 place-items-center rounded-full px-3 text-sm font-semibold tracking-[0.04em] text-muted-foreground uppercase transition-colors hover:bg-foreground/10 hover:text-foreground"
+            class="grid h-11 min-w-11 place-items-center rounded-full px-3 text-sm font-semibold tracking-[0.04em] text-muted-foreground uppercase transition-colors hover:bg-foreground/10 hover:text-foreground md:h-10"
           >{otherLang}</a>
           <a
             href={mapsUrl}
             target="_blank"
             rel="noopener"
-            class={buttonVariants({ variant: "outline", className: "h-10 px-5" })}
+            class={buttonVariants({ variant: "outline", className: "h-10 px-5 max-md:hidden" })}
             >{t("cta.directions")}</a
           >
-        </div>
         <button
           type="button"
           data-menu-toggle
@@ -137,6 +135,7 @@ const pageSwap = {
             ></span>
           </span>
         </button>
+        </div>
       </nav>
     </header>
 
@@ -182,20 +181,13 @@ const pageSwap = {
             {
               hours.map((h) => (
                 <p data-days={h.days.join(",")} class="hidden data-[today]:block">
-                  <span class="text-muted-foreground">{t("today")} </span>
+                  <span class="text-muted-foreground">{t("today")} {h.time && `${t("time.from")} `}</span>
                   <span class="text-primary">{formatHours(h.time, lang).toLowerCase()}</span>
                 </p>
               ))
             }
             <p class="text-muted-foreground">{address.street}, {address.city}</p>
           </div>
-          <a
-            href={switchHref}
-            hreflang={otherLang}
-            lang={otherLang}
-            data-menu-lang
-            class="-my-2 inline-flex min-h-11 items-center self-start text-base text-muted-foreground underline decoration-foreground/30 underline-offset-4 transition-colors hover:text-foreground"
-          >{languages[otherLang]}</a>
           <div class="flex items-center gap-3">
             <a
               href={mapsUrl}

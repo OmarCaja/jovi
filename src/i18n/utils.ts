@@ -17,9 +17,13 @@ export function getTranslations(lang: Lang) {
   return (key: UiKey) => ui[lang][key] ?? ui[defaultLang][key]
 }
 
-// The default language has no prefix: "/carta" (es) vs "/en/carta" (en). Home is "/" or "/en/".
+// The default language has no prefix: "/carta/" (es) vs "/en/carta/" (en). Home is "/" or "/en/".
+// Always a trailing slash: GitHub Pages answers "/carta" with a 301 to "/carta/".
 export function getTranslatedPath(lang: Lang) {
-  return (path: string, l: Lang = lang) => withBase(l === defaultLang ? path : `/${l}${path === "/" ? "/" : path}`)
+  return (path: string, l: Lang = lang) => {
+    const p = path.endsWith("/") ? path : `${path}/`
+    return withBase(l === defaultLang ? p : `/${l}${p}`)
+  }
 }
 
 // Same page in the other language: strip the current prefix, then add the target one.

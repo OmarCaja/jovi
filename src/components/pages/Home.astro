@@ -59,7 +59,7 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
 
 <Layout>
     <!-- Hero: full-bleed bar photo, message anchored bottom-left -->
-    <section class="relative isolate flex min-h-[100dvh] items-end overflow-hidden">
+    <section class="relative isolate flex min-h-[100svh] items-end overflow-hidden">
       <div data-hero-image class="absolute inset-0 -z-10">
         <Image
           src={bar}
@@ -87,7 +87,7 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
           </p>
           <h1
             data-hero
-            class="text-5xl leading-[1.1] [text-wrap:wrap] md:text-6xl lg:text-7xl"
+            class="text-5xl leading-[1.1] [text-wrap:pretty] md:text-6xl lg:text-7xl"
           >
             {t("hero.title")} <em class="whitespace-nowrap not-italic text-primary">{t("hero.since")}</em>
           </h1>
@@ -119,10 +119,10 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
       <div
         aria-hidden="true"
         data-casa-spill
-        class="casa-spill pointer-events-none absolute inset-0 -z-10"
+        class="casa-spill pointer-events-none absolute -z-10"
       ></div>
       <div
-        class="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-24 md:min-h-[100dvh] md:grid-cols-12 md:items-center md:gap-16 md:px-8 md:py-16"
+        class="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-24 md:min-h-[100svh] md:grid-cols-12 md:items-center md:gap-16 md:px-8 md:py-16"
       >
       <div class="relative isolate overflow-hidden md:col-span-5" data-lamp>
         <!-- The wall in the dark. -->
@@ -136,21 +136,26 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
           class="aspect-[4/5] w-full object-cover object-[50%_20%] brightness-[0.05] saturate-[0.4]"
           data-lamp-photo
         />
-        <!-- The same photo, lit: revealed through a cone of light that grows from the lamp. -->
-        <Image
-          src={horse}
-          alt={t("house.alt")}
-          widths={[480, 720, 960, 1280]}
-          width={1280}
-          sizes="(min-width: 768px) 40vw, 100vw"
-          class="lamp-lit absolute inset-0 h-full w-full object-cover object-[50%_20%]"
-          data-lamp-photo
-        />
+        <!-- The same photo, lit: light that grows from the lamp. The outer layer scales
+             (with its static mask), the inner one counter-scales so the photo itself stays put. -->
+        <div data-lamp-light class="lamp-light">
+          <div data-lamp-counter class="lamp-counter">
+            <Image
+              src={horse}
+              alt={t("house.alt")}
+              widths={[480, 720, 960, 1280]}
+              width={1280}
+              sizes="(min-width: 768px) 40vw, 100vw"
+              class="absolute inset-0 h-full w-full object-cover object-[50%_20%]"
+              data-lamp-photo
+            />
+          </div>
+        </div>
         <!-- Warm spill of the bulb on the wall, and the bulb's hotspot. -->
         <div
           aria-hidden="true"
           data-lamp-glow
-          class="pointer-events-none absolute inset-0 bg-[radial-gradient(75%_55%_at_50%_9%,oklch(0.8_0.12_75/0.5),transparent_70%)] opacity-40 mix-blend-soft-light"
+          class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_closest-side_at_50%_38%,oklch(0.8_0.12_75/0.5),transparent)] opacity-40 mix-blend-soft-light"
         ></div>
         <div
           aria-hidden="true"
@@ -284,7 +289,7 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
             rel="noopener"
             class="group inline-flex min-h-11 items-center gap-2 text-primary"
           >
-            Condé Nast Traveler
+            <span translate="no">Condé Nast Traveler</span>
             <HugeiconsIcon icon={ArrowUpRight01Icon} size={18} strokeWidth={1.5} className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </a>
         </figcaption>
@@ -304,7 +309,7 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
                       class="group flex items-baseline justify-between gap-6"
                     >
                       <span>
-                        <span class="font-heading text-2xl font-medium tracking-[-0.015em] transition-colors group-hover:text-primary md:text-3xl">
+                        <span translate="no" class="font-heading text-2xl font-medium tracking-[-0.015em] transition-colors group-hover:text-primary md:text-3xl">
                           {l.name}
                         </span>
                         <span class="mt-1 block text-muted-foreground">{l.desc}</span>
@@ -313,7 +318,7 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
                         icon={ArrowUpRight01Icon}
                         size={20}
                         strokeWidth={1.5}
-                        className="shrink-0 text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
+                        className="shrink-0 text-muted-foreground transition-[translate,color] duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
                       />
                     </a>
                   </li>
@@ -390,7 +395,8 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
     const section = document.querySelector<HTMLElement>("[data-casa]")
     if (!section) return
 
-    const lit = section.querySelectorAll<HTMLElement>("[data-lamp-photo]")[1]
+    const light = section.querySelector<HTMLElement>("[data-lamp-light]")!
+    const counter = section.querySelector<HTMLElement>("[data-lamp-counter]")!
     const photos = section.querySelectorAll<HTMLElement>("[data-lamp-photo]")
     const glow = section.querySelector<HTMLElement>("[data-lamp-glow]")!
     const bulb = section.querySelector<HTMLElement>("[data-lamp-bulb]")!
@@ -412,11 +418,11 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
     // Default markup is the fully lit wall. Motion only darkens it first when it is allowed,
     // so no-JS and reduced-motion visitors always see the photo.
     const dark = () => {
-      // Not 0%: Safari drops a zero-size mask gradient and shows the lit photo in full.
-      gsap.set(lit, { "--rx": "0.1%", "--ry": "0.1%" })
+      gsap.set(light, { scale: 0.02 })
+      gsap.set(counter, { scale: 50 })
       gsap.set([glow, bulb], { opacity: 0 })
       gsap.set(veil, { opacity: 1 })
-      gsap.set(spill, { "--sr": "0px", opacity: 0 })
+      gsap.set(spill, { scale: 0, opacity: 0 })
       gsap.set(photos, { scale: 1.06, transformOrigin: "50% 0%" })
       // The words wait in the dark, barely there, until the light reaches them.
       gsap.set(copy, { opacity: 0.04, y: 16 })
@@ -427,7 +433,7 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
       gsap
         .timeline()
         .to([bulb, spill], { opacity: 1, duration: 0.05 })
-        .set(spill, { "--sr": "18vmax" }, 0)
+        .set(spill, { scale: 0.19 }, 0)
         .to([bulb, spill], { opacity: 0.1, duration: 0.08 })
         .to([bulb, spill], { opacity: 0.85, duration: 0.05 }, "+=0.12")
         .to([bulb, spill], { opacity: 0.2, duration: 0.06 })
@@ -437,8 +443,17 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
     // The light pours down the wall, out of the frame and across the room to the words.
     const pour = (tl: gsap.core.Timeline) =>
       tl
-        .to(lit, { "--rx": "150%", "--ry": "170%", duration: 1, ease: "power2.inOut" }, 0)
-        .to(spill, { "--sr": "95vmax", duration: 1, ease: "power2.inOut" }, 0)
+        .to(
+          light,
+          {
+            scale: 1,
+            duration: 1,
+            ease: "power2.inOut",
+            onUpdate: () => void gsap.set(counter, { scale: 1 / Number(gsap.getProperty(light, "scale")) }),
+          },
+          0
+        )
+        .to(spill, { scale: 1, duration: 1, ease: "power2.inOut" }, 0)
         .to(veil, { opacity: 0, duration: 0.75, ease: "power2.inOut" }, 0.15)
         .to(glow, { opacity: 0.85, duration: 0.45, ease: "power2.out" }, 0.05)
         .to(glow, { opacity: 0.4, duration: 0.5, ease: "power1.inOut" }, 0.5)

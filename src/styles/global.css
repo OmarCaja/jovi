@@ -128,8 +128,9 @@
   .js [data-reveal], .js [data-hero], .js [data-hero-image] img { opacity: 0; }
   /* La casa starts with the lights off in CSS, not just from JS: iOS Safari otherwise paints
      the lit defaults before (or instead of) the script's dark state. Mirrors dark() in Home.astro. */
-  .js .lamp-lit { --rx: 0.1%; --ry: 0.1%; }
-  .js .casa-spill { --sr: 0px; opacity: 0; }
+  .js [data-lamp-light] { transform: scale(0.02); }
+  .js [data-lamp-counter] { transform: scale(50); }
+  .js .casa-spill { transform: scale(0); opacity: 0; }
   .js [data-casa-veil] { opacity: 1; }
   .js [data-lamp-glow], .js [data-lamp-bulb] { opacity: 0; }
   .js [data-lamp-copy] > * { opacity: 0.04; }
@@ -138,26 +139,46 @@
   html { scroll-behavior: auto; }
 }
 
-/* La casa: the lit photo shows through an elliptical cone hung from the picture lamp.
-   Defaults are oversized, so without JS (or with reduced motion) the wall is fully lit. */
-.lamp-lit {
-  --rx: 400%;
-  --ry: 400%;
-  mask-image: radial-gradient(var(--rx) var(--ry) at 50% 9%, #000 35%, transparent 100%);
-  -webkit-mask-image: radial-gradient(var(--rx) var(--ry) at 50% 9%, #000 35%, transparent 100%);
+/* La casa: the lamp light grows as a circle from the lamp and ends covering the whole photo.
+   The light layer is a square much larger than the photo, centred on the lamp (50% 9%), so its
+   circle never shows square edges while it scales; the frame's overflow clips it to the photo.
+   The counter layer puts the photo back where it was. Units are cqw of [data-lamp] (4:5 photo,
+   so its height is 125cqw). Mask is static; JS only animates transforms (smooth on iOS). */
+[data-lamp] { container-type: inline-size; }
+.lamp-light {
+  position: absolute;
+  width: 320cqw;
+  height: 320cqw;
+  left: calc(50% - 160cqw);
+  top: calc(9% - 160cqw);
+  mask-image: radial-gradient(circle closest-side, #000 80%, transparent);
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 80%, transparent);
+}
+.lamp-counter {
+  position: absolute;
+  width: 100cqw;
+  height: 125cqw;
+  left: 110cqw;
+  top: 148.75cqw;
+  transform-origin: 50% 9%;
 }
 
-/* La casa spill: lamp light that escapes the frame and warms the room. Defaults give the
-   settled, lit state for no-JS and reduced motion; JS animates --sr from 0. */
+/* La casa spill: lamp light that escapes the frame and warms the room. A round element centred
+   on the lamp (--lx/--ly, set by JS), so it stays a circle while JS scales it up from 0.
+   Defaults give the settled, lit state for no-JS and reduced motion. */
 .casa-spill {
   --lx: 25%;
   --ly: 15%;
-  --sr: 95vmax;
+  left: var(--lx);
+  top: var(--ly);
+  width: 133vmax;
+  height: 133vmax;
+  translate: -50% -50%;
   background: radial-gradient(
-    var(--sr) circle at var(--lx) var(--ly),
+    closest-side,
     oklch(0.8 0.12 75 / 0.16),
-    oklch(0.8 0.12 75 / 0.06) 35%,
-    transparent 70%
+    oklch(0.8 0.12 75 / 0.06) 50%,
+    transparent
   );
 }
 

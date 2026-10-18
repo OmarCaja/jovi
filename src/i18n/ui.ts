@@ -33,6 +33,7 @@ export const ui = {
     "instagram": "Instagram de Taberna Jovi",
     "today": "Hoy",
     "closed": "Cerrado",
+    "time.from": "de",
     "time.to": "a",
 
     "hero.eyebrow": "Casco antiguo de Cuenca",
@@ -129,6 +130,7 @@ export const ui = {
     "instagram": "Taberna Jovi on Instagram",
     "today": "Today",
     "closed": "Closed",
+    "time.from": "from",
     "time.to": "to",
 
     "hero.eyebrow": "Cuenca old town",
