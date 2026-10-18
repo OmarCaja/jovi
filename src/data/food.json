@@ -1,0 +1,74 @@
+[
+  {
+    "id": "raciones",
+    "label": "Raciones",
+    "note": "Servimos medias raciones. Consulten las sugerencias del día.",
+    "sections": [
+      {
+        "title": "Comparte",
+        "items": [
+          { "title": "Bonito en escabeche con tomate", "allergens": "4, 14", "price": "14,00" },
+          { "title": "Boquerones en vinagre", "allergens": "4, 14", "price": "9,50" },
+          { "title": "Boquerones en vinagre y anchoas de Santoña", "allergens": "4, 14", "price": "15,00" },
+          { "title": "Croquetas", "allergens": "1, 3, 7", "price": "12,00" },
+          { "title": "Salchichas con bacon", "allergens": "1, 3, 4, 7", "price": "12,00" },
+          { "title": "Dátiles con bacon", "allergens": "1, 3, 4, 7", "price": "12,00" },
+          { "title": "Pisto con magro", "allergens": "1", "price": "12,00" },
+          {
+            "title": "Revuelto de setas",
+            "desc": "Con jamón, queso, huevo y verduras salteadas con setas shiitake",
+            "allergens": "3, 7",
+            "price": "15,00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tostas",
+    "label": "Tostas",
+    "sections": [
+      {
+        "title": "Crujientes",
+        "items": [
+          { "title": "Salmón ahumado", "allergens": "1, 4", "price": "5,00" },
+          { "title": "Queso azul con anchoa", "allergens": "1, 4, 7", "price": "5,00" },
+          { "title": "Boquerón y anchoa", "allergens": "1, 4, 14", "price": "5,00" }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sandwiches",
+    "label": "Sándwiches",
+    "sections": [
+      {
+        "title": "Irresistibles",
+        "items": [
+          { "title": "Mixto", "desc": "Queso y jamón york", "allergens": "1, 7", "price": "5,50" },
+          { "title": "Antonio Chicote", "desc": "Queso, jamón york y huevo revuelto", "allergens": "1, 3, 7", "price": "6,00" },
+          { "title": "Jovi", "desc": "Pollo, salsa rosa y tomate", "allergens": "1, 3, 10", "price": "5,00" },
+          { "title": "Salmón", "desc": "Salmón ahumado, huevo revuelto y queso", "allergens": "1, 3, 4, 7", "price": "7,00" },
+          { "title": "Tomate con queso y anchoas", "allergens": "1, 4, 7", "price": "6,00" }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "montados",
+    "label": "Montados",
+    "note": "Suplementos (queso, tomate, mayonesa...) 0,50 €",
+    "sections": [
+      {
+        "title": "De barra",
+        "items": [
+          { "title": "Lomo", "allergens": "1", "price": "5,00" },
+          { "title": "Jamón con tomate", "allergens": "1", "price": "5,00" },
+          { "title": "Bacon con queso", "allergens": "1, 7", "price": "5,00" },
+          { "title": "Bonito en escabeche con tomate", "allergens": "1, 4, 14", "price": "5,00" },
+          { "title": "Boquerón y anchoa con tomate", "allergens": "1, 4, 14", "price": "5,00" }
+        ]
+      }
+    ]
+  }
+]

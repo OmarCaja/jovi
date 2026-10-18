@@ -1,0 +1,72 @@
+---
+import Layout from "@/layouts/main.astro"
+import { Menu, type MenuGroup } from "@/components/menu"
+import drinks from "@/data/drinks.json"
+import food from "@/data/food.json"
+
+const drinkOrder = ["cocktails", "coffees", "wines", "beers", "liquors", "refreshments"]
+const drinkLabels: Record<string, string> = {
+  cocktails: "Cócteles",
+  coffees: "Cafés",
+  wines: "Vinos",
+  beers: "Cervezas",
+  liquors: "Licores",
+  refreshments: "Aperitivos y refrescos",
+}
+const drinkGroups: MenuGroup[] = drinkOrder.map((id) => {
+  const sections = drinks.find((d) => d.drink === id)!.drinksSectionWrapper.drinksSection
+  return {
+    id,
+    label: drinkLabels[id],
+    sections: sections.map((s) => ({
+      // A single sub-list would only repeat the tab label.
+      title: sections.length > 1 ? s.tittle : undefined,
+      items: s.drinks,
+    })),
+  }
+})
+
+const allergens = [
+  "Gluten", "Crustáceos", "Huevos", "Pescado", "Cacahuetes", "Soja", "Lácteos",
+  "Frutos de cáscara", "Apio", "Mostaza", "Sésamo", "Moluscos", "Altramuces", "Sulfitos",
+]
+---
+
+<Layout
+  title="La carta | Taberna Jovi, Cuenca"
+  description="Raciones, tostas, sándwiches y montados, más cócteles, cafés, vinos y licores de Taberna Jovi en Cuenca."
+>
+  <div class="mx-auto max-w-7xl px-4 pt-32 pb-24 md:px-8 md:pt-40 md:pb-32">
+    <h1 data-reveal class="text-5xl leading-[1.1] md:text-7xl">
+      La carta
+    </h1>
+
+    <section aria-labelledby="comer" class="mt-16 md:mt-24">
+      <h2 id="comer" data-reveal class="mb-10 scroll-mt-24 text-4xl leading-[1.1] md:text-5xl">
+        Para comer
+      </h2>
+      <div data-reveal>
+        <Menu client:load groups={food} />
+      </div>
+    </section>
+
+    <section aria-labelledby="beber" class="mt-24 md:mt-32">
+      <h2 id="beber" data-reveal class="mb-10 scroll-mt-24 text-4xl leading-[1.1] md:text-5xl">
+        Para beber
+      </h2>
+      <div data-reveal>
+        <Menu client:load groups={drinkGroups} />
+      </div>
+    </section>
+
+    <aside class="mt-24 grid gap-8 border-t border-border pt-10 text-sm text-muted-foreground md:grid-cols-3">
+      <p>Precios con IVA incluido. Ración de pan 0,50 € por persona.</p>
+      <div class="md:col-span-2">
+        <h2 class="mb-3 font-sans text-sm text-foreground">Alérgenos</h2>
+        <ol class="grid grid-cols-2 gap-x-6 gap-y-1 sm:grid-cols-3 lg:grid-cols-4">
+          {allergens.map((a, i) => <li><span class="tabular-nums">{i + 1}.</span> {a}</li>)}
+        </ol>
+      </div>
+    </aside>
+  </div>
+</Layout>

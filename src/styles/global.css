@@ -1,0 +1,141 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/manrope";
+@import "@fontsource-variable/bricolage-grotesque/opsz.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-heading: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
+    --font-sans: 'Manrope Variable', ui-sans-serif, system-ui, sans-serif;
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+    /* Theme lock: one dark theme for the whole page (Forest family: bottle green, bone, lamp amber). */
+    color-scheme: dark;
+    --background: oklch(0.17 0.02 160);
+    --foreground: oklch(0.94 0.012 85);
+    --card: oklch(0.21 0.025 160);
+    --card-foreground: oklch(0.94 0.012 85);
+    --popover: oklch(0.21 0.025 160);
+    --popover-foreground: oklch(0.94 0.012 85);
+    --primary: oklch(0.8 0.12 75);
+    --primary-foreground: oklch(0.17 0.02 160);
+    --secondary: oklch(0.25 0.025 160);
+    --secondary-foreground: oklch(0.94 0.012 85);
+    --muted: oklch(0.25 0.025 160);
+    --muted-foreground: oklch(0.76 0.015 100);
+    --accent: oklch(0.25 0.025 160);
+    --accent-foreground: oklch(0.94 0.012 85);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(0.94 0.012 85 / 14%);
+    --input: oklch(0.94 0.012 85 / 18%);
+    --ring: oklch(0.8 0.12 75);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    /* Shape lock: all-sharp. */
+    --radius: 0rem;
+    --sidebar: oklch(0.21 0.025 160);
+    --sidebar-foreground: oklch(0.94 0.012 85);
+    --sidebar-primary: oklch(0.8 0.12 75);
+    --sidebar-primary-foreground: oklch(0.17 0.02 160);
+    --sidebar-accent: oklch(0.25 0.025 160);
+    --sidebar-accent-foreground: oklch(0.94 0.012 85);
+    --sidebar-border: oklch(0.94 0.012 85 / 14%);
+    --sidebar-ring: oklch(0.8 0.12 75);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
+    }
+  html {
+    @apply font-sans scroll-smooth;
+    }
+  /* Type system: Bricolage Grotesque carries display (opsz tightens it at large sizes),
+     Manrope carries text. Light-on-dark text gets a hair of extra tracking. */
+  body {
+    letter-spacing: 0.005em;
+    font-feature-settings: "kern", "liga";
+    }
+  h1, h2, h3 {
+    @apply font-heading;
+    font-weight: 600;
+    font-optical-sizing: auto;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+    }
+  h3 {
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    }
+  ::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    }
+  html {
+    scrollbar-color: color-mix(in oklch, var(--foreground) 25%, transparent) var(--background);
+    }
+}
+
+/* GSAP reveal targets start hidden only when JS + motion are allowed, so no-JS and reduced-motion users see content. */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal], .js [data-hero], .js [data-hero-image] img { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+/* La casa: the lit photo shows through an elliptical cone hung from the picture lamp.
+   Defaults are oversized, so without JS (or with reduced motion) the wall is fully lit. */
+.lamp-lit {
+  --rx: 400%;
+  --ry: 400%;
+  mask-image: radial-gradient(var(--rx) var(--ry) at 50% 9%, #000 35%, transparent 100%);
+  -webkit-mask-image: radial-gradient(var(--rx) var(--ry) at 50% 9%, #000 35%, transparent 100%);
+}
