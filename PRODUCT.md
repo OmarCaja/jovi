@@ -37,7 +37,10 @@ Since 1977, a mid-century British pub interior in Cuenca's old town (curved wood
 - **Menu:** food (Raciones, Tostas, Sándwiches, Montados) in `src/data/food.json`, transcribed from the printed menu, and drinks in `src/data/drinks.json`. It includes allergen numbers 1-14 with a legend, half portions on request, supplements at 0,50 €, bread at 0,50 € per person, and VAT included in prices.
 - The menu can deep-link to a tab, for example `/carta?tab=coffees#beber`.
 - "Cómo llegar" opens a Google Maps search for Taberna Jovi Cuenca.
-- **Languages:** the site must serve **Spanish and English**. Today it is Spanish only, so English is a required capability not yet built.
+- **Languages:** Spanish at `/` and English at `/en/`, using Astro i18n routing.
+  - UI strings live in `src/i18n/ui.ts`.
+  - English for the menu data lives in `src/i18n/menu.ts`; the JSON files stay the Spanish source.
+  - Brand and cocktail names are not translated. The Traveler headline is shown translated on the English page.
 - **Address and hours** come from the Google Maps listing (checked 2026-10-18) and are kept in `src/lib/site.ts`.
   - Address: C. Colmillo, 10, 16001 Cuenca.
   - Hours: closed Monday and Tuesday; Wednesday and Thursday 19:00 to 2:00; Friday 19:00 to 3:00; Saturday 16:00 to 3:00; Sunday 16:00 to 2:00.

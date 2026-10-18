@@ -139,3 +139,26 @@
   mask-image: radial-gradient(var(--rx) var(--ry) at 50% 9%, #000 35%, transparent 100%);
   -webkit-mask-image: radial-gradient(var(--rx) var(--ry) at 50% 9%, #000 35%, transparent 100%);
 }
+
+/* La casa spill: lamp light that escapes the frame and warms the room. Defaults give the
+   settled, lit state for no-JS and reduced motion; JS animates --sr from 0. */
+.casa-spill {
+  --lx: 25%;
+  --ly: 15%;
+  --sr: 95vmax;
+  background: radial-gradient(
+    var(--sr) circle at var(--lx) var(--ly),
+    oklch(0.8 0.12 75 / 0.16),
+    oklch(0.8 0.12 75 / 0.06) 35%,
+    transparent 70%
+  );
+}
+
+/* Page transition (ClientRouter): the old content dips out, the new one rises in.
+   Astro drops view-transition animations under prefers-reduced-motion. */
+@keyframes page-out {
+  to { opacity: 0; transform: translateY(-8px); }
+}
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(16px); }
+}

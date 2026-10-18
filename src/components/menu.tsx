@@ -1,5 +1,7 @@
 import { useState, useSyncExternalStore } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { formatPrice } from "@/i18n/utils"
+import type { Lang } from "@/i18n/ui"
 
 type Item = { title: string; desc?: string; allergens?: string; price: string }
 export type MenuGroup = {
@@ -9,7 +11,15 @@ export type MenuGroup = {
   sections: { title?: string; items: Item[] }[]
 }
 
-export function Menu({ groups }: { groups: MenuGroup[] }) {
+export function Menu({
+  groups,
+  lang,
+  allergensLabel,
+}: {
+  groups: MenuGroup[]
+  lang: Lang
+  allergensLabel: string
+}) {
   // Deep link from the landing page: /carta?tab=coffees opens that tab.
   const urlTab = useSyncExternalStore(
     () => () => {},
@@ -52,7 +62,7 @@ export function Menu({ groups }: { groups: MenuGroup[] }) {
                         className="min-w-4 flex-1 translate-y-[-3px] border-b border-dotted border-border"
                       />
                       <span className="whitespace-nowrap text-muted-foreground tabular-nums">
-                        {d.price} €
+                        {formatPrice(d.price, lang)}
                       </span>
                     </div>
                     {(d.desc || d.allergens) && (
@@ -61,7 +71,7 @@ export function Menu({ groups }: { groups: MenuGroup[] }) {
                         {d.desc && d.allergens && ". "}
                         {d.allergens && (
                           <span>
-                            Alérgenos {d.allergens}
+                            {allergensLabel} {d.allergens}
                           </span>
                         )}
                       </p>

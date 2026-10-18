@@ -1,0 +1,271 @@
+---
+import { Image, getImage } from "astro:assets"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowLeft01Icon, ArrowRight01Icon, Cancel01Icon } from "@hugeicons/core-free-icons"
+import Layout from "@/layouts/main.astro"
+import { getLangFromUrl, getTranslations } from "@/i18n/utils"
+import horse from "@/assets/horse.jpeg"
+import terrace from "@/assets/gallery/1.jpg"
+import courtyard from "@/assets/gallery/2.jpg"
+import pint from "@/assets/gallery/3.jpg"
+import bar from "@/assets/gallery/4.jpg"
+import sandwiches from "@/assets/sandwiches.jpg"
+
+const lang = getLangFromUrl(Astro.url)
+const t = getTranslations(lang)
+
+const photos = [
+  { src: bar, alt: t("gallery.bar"), ratio: "aspect-[3/4]" },
+  { src: terrace, alt: t("gallery.terrace"), ratio: "aspect-square" },
+  { src: horse, alt: t("gallery.horse"), ratio: "aspect-[3/4]" },
+  { src: courtyard, alt: t("gallery.courtyard"), ratio: "aspect-[4/5]" },
+  { src: pint, alt: t("gallery.pint"), ratio: "aspect-[3/4]" },
+  { src: sandwiches, alt: t("gallery.sandwiches"), ratio: "aspect-[3/2]" },
+]
+
+// Full-screen versions: uncropped, capped at 2000px on the long side.
+const gallery = await Promise.all(
+  photos.map(async (p) => {
+    const landscape = p.src.width >= p.src.height
+    const full = await getImage({
+      src: p.src,
+      format: "webp",
+      ...(landscape ? { width: Math.min(2000, p.src.width) } : { height: Math.min(2000, p.src.height) }),
+    })
+    return { ...p, full: full.src }
+  })
+)
+
+const roundBtn =
+  "grid size-12 place-items-center rounded-full border border-foreground/30 bg-background/60 text-foreground backdrop-blur-sm transition-colors duration-300 hover:border-foreground/60 hover:bg-foreground/10 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+---
+
+<Layout
+  title={t("meta.galleryTitle")}
+  description={t("meta.galleryDescription")}
+>
+  <div class="mx-auto max-w-7xl px-4 pt-32 pb-24 md:px-8 md:pt-40 md:pb-32">
+    <h1 data-reveal class="mb-12 text-5xl leading-[1.1] md:mb-16 md:text-7xl">
+      {t("gallery.title")}
+    </h1>
+    <div class="columns-1 gap-4 sm:columns-2 lg:columns-3 [&>*]:mb-4">
+      {
+        gallery.map((g, i) => (
+          <button
+            type="button"
+            data-reveal
+            data-open={i}
+            data-full={g.full}
+            data-alt={g.alt}
+            data-ratio={g.src.width / g.src.height}
+            aria-label={`${t("gallery.open")}: ${g.alt}`}
+            class="group block w-full cursor-zoom-in overflow-hidden focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          >
+            <Image
+              src={g.src}
+              alt={g.alt}
+              widths={[480, 720, 960]}
+              width={960}
+              sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
+              loading={i < 3 ? "eager" : "lazy"}
+              class={`w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03] ${g.ratio}`}
+            />
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- Lightbox: native <dialog> gives focus trapping, Esc and a top layer; GSAP drives the shared-element transition. -->
+  <dialog
+    id="lightbox"
+    aria-label={t("gallery.dialog")}
+    class="m-0 h-dvh max-h-none w-screen max-w-none overflow-hidden bg-transparent p-0 text-foreground backdrop:bg-transparent open:grid open:place-items-center"
+  >
+    <div data-backdrop class="absolute inset-0 bg-background/95"></div>
+    <img
+      data-lightbox-img
+      alt=""
+      class="relative object-contain select-none"
+    />
+    <div data-ui>
+      <button type="button" data-close aria-label={t("gallery.close")} class={`${roundBtn} absolute top-[max(1rem,env(safe-area-inset-top))] right-4 md:top-6 md:right-6`}>
+        <HugeiconsIcon icon={Cancel01Icon} size={20} strokeWidth={1.75} />
+      </button>
+      <button
+        type="button"
+        data-step="-1"
+        aria-label={t("gallery.prev")}
+        class={`${roundBtn} absolute bottom-[max(1.5rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-[calc(100%+0.5rem)] md:top-1/2 md:bottom-auto md:left-6 md:translate-x-0 md:-translate-y-1/2`}
+      >
+        <HugeiconsIcon icon={ArrowLeft01Icon} size={20} strokeWidth={1.75} />
+      </button>
+      <button
+        type="button"
+        data-step="1"
+        aria-label={t("gallery.next")}
+        class={`${roundBtn} absolute bottom-[max(1.5rem,env(safe-area-inset-bottom))] left-1/2 translate-x-2 md:top-1/2 md:right-6 md:bottom-auto md:left-auto md:translate-x-0 md:-translate-y-1/2`}
+      >
+        <HugeiconsIcon icon={ArrowRight01Icon} size={20} strokeWidth={1.75} />
+      </button>
+    </div>
+  </dialog>
+</Layout>
+
+<script>
+  import { gsap } from "gsap"
+  import { onPage } from "@/lib/page"
+
+  onPage(() => {
+    if (!document.querySelector("#lightbox")) return
+
+    const dialog = document.querySelector<HTMLDialogElement>("#lightbox")!
+    const img = dialog.querySelector<HTMLImageElement>("[data-lightbox-img]")!
+    const backdrop = dialog.querySelector<HTMLElement>("[data-backdrop]")!
+    const ui = dialog.querySelector<HTMLElement>("[data-ui]")!
+    const items = [...document.querySelectorAll<HTMLButtonElement>("[data-open]")]
+    const thumbOf = (i: number) => items[i].querySelector("img")!
+    const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches
+    let current = 0
+    let closing = false
+
+    // Size the photo to fit the screen up front, so swapping the thumbnail for the
+    // full-resolution file never shifts the layout mid-animation.
+    const place = (i: number) => {
+      current = (i + items.length) % items.length
+      const item = items[current]
+      const ratio = Number(item.dataset.ratio)
+      const maxW = innerWidth - (innerWidth >= 768 ? 160 : 32)
+      const maxH = innerHeight - 128
+      const w = Math.min(maxW, maxH * ratio)
+      img.style.width = `${w}px`
+      img.style.height = `${w / ratio}px`
+      img.alt = item.dataset.alt!
+      img.src = thumbOf(current).currentSrc || thumbOf(current).src
+      const full = new Image()
+      full.src = item.dataset.full!
+      const want = current
+      full.decode().then(() => want === current && (img.src = full.src), () => {})
+    }
+
+    // Shared-element frame: where the full photo must sit (scale, offset, crop) to look
+    // exactly like the cropped thumbnail. Animating from/to it reads as one photo moving.
+    const thumbFrame = (i: number) => {
+      gsap.set(img, { clearProps: "transform,clipPath" })
+      const t = items[i].getBoundingClientRect()
+      const f = img.getBoundingClientRect()
+      const s = Math.max(t.width / f.width, t.height / f.height)
+      const ix = ((1 - t.width / s / f.width) / 2) * 100
+      const iy = ((1 - t.height / s / f.height) / 2) * 100
+      return {
+        x: t.left + t.width / 2 - (f.left + f.width / 2),
+        y: t.top + t.height / 2 - (f.top + f.height / 2),
+        scale: s,
+        clipPath: `inset(${iy}% ${ix}% ${iy}% ${ix}%)`,
+        onScreen: t.bottom > 0 && t.top < innerHeight,
+      }
+    }
+
+    const open = (i: number) => {
+      gsap.killTweensOf([img, backdrop, ui])
+      place(i)
+      dialog.showModal()
+      document.documentElement.style.overflow = "hidden"
+      gsap.set(thumbOf(current), { autoAlpha: 0 })
+      if (reduced()) {
+        gsap.fromTo([backdrop, img, ui], { opacity: 0 }, { opacity: 1, duration: 0.2 })
+        return
+      }
+      const { onScreen: _, ...from } = thumbFrame(current)
+      gsap
+        .timeline()
+        .fromTo(backdrop, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.out" })
+        .fromTo(
+          img,
+          from,
+          { x: 0, y: 0, scale: 1, clipPath: "inset(0% 0% 0% 0%)", duration: 0.75, ease: "expo.out" },
+          0
+        )
+        .fromTo(ui, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.35)
+    }
+
+    const finishClose = () => {
+      gsap.set(items.map((_, i) => thumbOf(i)), { autoAlpha: 1 })
+      dialog.close()
+      gsap.set([img, backdrop, ui], { clearProps: "transform,clipPath,opacity" })
+      closing = false
+    }
+
+    const close = () => {
+      if (!dialog.open || closing) return
+      closing = true
+      gsap.killTweensOf([img, backdrop, ui])
+      if (reduced()) {
+        gsap.to([backdrop, img, ui], { opacity: 0, duration: 0.2, onComplete: finishClose })
+        return
+      }
+      const { onScreen, ...to } = thumbFrame(current)
+      gsap
+        .timeline({ onComplete: finishClose })
+        .to(ui, { opacity: 0, duration: 0.15 })
+        .to(
+          img,
+          onScreen
+            ? { ...to, duration: 0.5, ease: "power3.inOut" }
+            : { opacity: 0, scale: 0.96, duration: 0.3, ease: "power2.in" },
+          0
+        )
+        .to(backdrop, { opacity: 0, duration: 0.45, ease: "power2.inOut" }, 0.05)
+    }
+
+    const step = (dir: number) => {
+      if (closing) return
+      gsap.set(thumbOf(current), { autoAlpha: 1 })
+      place(current + dir)
+      gsap.set(thumbOf(current), { autoAlpha: 0 })
+      gsap.killTweensOf(img)
+      gsap.set(img, { clearProps: "transform,clipPath" })
+      gsap.fromTo(
+        img,
+        { opacity: 0, x: reduced() ? 0 : dir * 48 },
+        { opacity: 1, x: 0, duration: reduced() ? 0.2 : 0.45, ease: "expo.out" }
+      )
+    }
+
+    items.forEach((btn, i) => btn.addEventListener("click", () => open(i)))
+    dialog.addEventListener("close", () => {
+      document.documentElement.style.overflow = ""
+      items[current].focus({ preventScroll: true })
+    })
+    // Esc: animate out instead of the native instant close.
+    dialog.addEventListener("cancel", (e) => {
+      e.preventDefault()
+      close()
+    })
+    dialog.querySelector("[data-close]")!.addEventListener("click", close)
+    dialog.querySelectorAll<HTMLButtonElement>("[data-step]").forEach((b) =>
+      b.addEventListener("click", () => step(Number(b.dataset.step)))
+    )
+    // Clicking the dark area around the photo closes it.
+    dialog.addEventListener("click", (e) => {
+      if (e.target === dialog || e.target === backdrop) close()
+    })
+    dialog.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") step(-1)
+      if (e.key === "ArrowRight") step(1)
+    })
+
+    // Swipe left/right on touch screens.
+    let startX = 0
+    dialog.addEventListener("touchstart", (e) => (startX = e.touches[0].clientX), { passive: true })
+    dialog.addEventListener("touchend", (e) => {
+      const dx = e.changedTouches[0].clientX - startX
+      if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1)
+    })
+
+    return () => {
+      gsap.killTweensOf([img, backdrop, ui])
+      document.documentElement.style.overflow = ""
+    }
+  })
+</script>

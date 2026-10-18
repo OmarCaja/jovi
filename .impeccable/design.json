@@ -157,6 +157,11 @@
         "name": "picture-light",
         "value": "mask radial-gradient(var(--rx) var(--ry) at 50% 9%) 0 to 150%/170% power2.inOut; bulb flicker; photo scale 1.06 to 1; desktop pinned scrub 0.8 over +=110%; mobile plays once at 0.55x",
         "purpose": "Home La casa: the picture lamp switches on and light pours over the painting."
+      },
+      {
+        "name": "page-transition",
+        "value": "ClientRouter; main: page-out 180ms ease-in (opacity 0, -8px), page-in 520ms +60ms cubic-bezier(0.16,1,0.3,1) (from opacity 0, +16px); header/footer static",
+        "purpose": "Navigate between pages swapping only the content."
       }
     ],
     "breakpoints": [

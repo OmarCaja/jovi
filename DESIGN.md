@@ -228,9 +228,12 @@ Amber text in 14-16px Manrope with a 1.5px-stroke arrow (Hugeicons) that slides 
 ### Press Link Row
 A source name in Bricolage at 24-30px and weight 500, with a Muted Bone descriptor below and an up-right arrow aligned right. The name turns amber on hover. Rows are grouped under small Muted Bone group labels and separated by space, never by dividers.
 
+### Page Transitions
+Moving between pages swaps only the content, using Astro's `<ClientRouter />`. The header and footer hold still (`transition:animate="none"`). The old `<main>` dips out (180ms: fade with an 8px lift). The new one rises in (520ms after a 60ms delay, from 16px below, `cubic-bezier(0.16, 1, 0.3, 1)`). Astro turns this off under reduced motion. Page scripts run through `onPage()` in `src/lib/page.ts`, which re-runs them on every `astro:page-load` and tears them down on `astro:before-swap`.
+
 ### The Picture Light (signature, home "La casa")
 The lamp switches on.
-- **Build:** the horse painting photo is stacked twice. Underneath is the wall in the dark (brightness 16%, saturation 60%). On top is the lit photo, shown through an elliptical mask hung from the picture lamp at 50% 9%. A warm amber soft-light glow and a wide bulb hotspot sit over both.
+- **Build:** the section is full-bleed. A near-black veil (`oklch(0.07 0.012 160)`) turns the room's lights off, and an amber spill (`.casa-spill`) anchored on the lamp grows from 0 to 95vmax, so the light leaves the frame and reaches the words, which wait at 4% opacity. The horse painting photo is stacked twice. Underneath is the wall in the dark (brightness 5%, saturation 40%). On top is the lit photo, shown through an elliptical mask hung from the picture lamp at 50% 9%. A warm amber soft-light glow and a wide bulb hotspot sit over both.
 - **Desktop:** the section pins for 110% of a viewport and the scroll acts as the dimmer: scrub 0.8, refreshed before other triggers. The bulb stutters on twice like warming tungsten. The cone pours down the wall (mask 0 to 150% and 170%, `power2.inOut`) while the photo settles from 106%. The glow peaks, then relaxes, and the heading, text and link rise in at 62% of the scroll.
 - **Mobile:** no pinning. The same sequence plays once on arrival at 0.55× speed, after the flicker.
 - **Fallback:** the markup's default is the fully lit wall, so without JS or with reduced motion the photo is simply lit.

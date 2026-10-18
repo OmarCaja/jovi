@@ -1,0 +1,499 @@
+---
+import { Image } from "astro:assets"
+import Layout from "@/layouts/main.astro"
+import { buttonVariants } from "@/components/ui/button"
+import { address, hours, mapsUrl } from "@/lib/site"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowRight01Icon, ArrowUpRight01Icon, Location01Icon } from "@hugeicons/core-free-icons"
+import drinks from "@/data/drinks.json"
+import { formatHours, getLangFromUrl, getTranslatedPath, getTranslations } from "@/i18n/utils"
+import horse from "@/assets/horse.jpeg"
+import courtyard from "@/assets/gallery/2.jpg"
+import pint from "@/assets/gallery/3.jpg"
+import bar from "@/assets/gallery/4.jpg"
+import sandwiches from "@/assets/sandwiches.jpg"
+
+const lang = getLangFromUrl(Astro.url)
+const t = getTranslations(lang)
+const path = getTranslatedPath(lang)
+
+const cocktailCount = drinks
+  .find((d) => d.drink === "cocktails")!
+  .drinksSectionWrapper.drinksSection.find((s) => s.id === "cocktails")!
+  .drinks.length
+
+const linkLabel = "mt-6 inline-flex items-center gap-2 text-sm text-primary"
+const arrow = "transition-transform duration-300 group-hover:translate-x-1"
+
+const travelerUrl =
+  "https://www.traveler.es/articulos/la-mejor-cocteleria-del-interior-de-espana-esta-en-cuenca-y-no-lo-sabias"
+const references = [
+  {
+    group: t("press.guides"),
+    links: [
+      { name: "Guía Repsol", desc: t("press.repsol"), href: "https://www.guiarepsol.com/es/fichas/solete/jovi-333161/" },
+      { name: "Visita Cuenca", desc: t("press.visitCuenca"), href: "https://visitacuenca.es/en/node/20541" },
+      { name: "Toppings and Salads", desc: t("press.toppings"), href: "https://www.toppingsandsalads.es/bar-de-tapas/taberna-jovi/" },
+    ],
+  },
+  {
+    group: t("press.reviews"),
+    links: [
+      { name: "Tripadvisor", desc: t("press.tripadvisor"), href: "https://www.tripadvisor.es/Attraction_Review-g262065-d5910514-Reviews-Taberna_Jovi-Cuenca_Province_of_Cuenca_Castile_La_Mancha.html" },
+      { name: "Restaurant Guru", desc: t("press.guru"), href: "https://es.restaurantguru.com/Taberna-JO-Cuenca-Castile-La-Mancha" },
+      { name: "Instagram", desc: "@tabernajovi", href: "https://www.instagram.com/tabernajovi/" },
+    ],
+  },
+]
+
+const primaryCta = buttonVariants({ size: "lg", className: "h-12 gap-2 pr-5 pl-7 text-base" })
+const secondaryCta = buttonVariants({
+  variant: "outline",
+  size: "lg",
+  className: "h-12 gap-2 pr-7 pl-5 text-base",
+})
+const closingCta = buttonVariants({ size: "lg", className: "h-12 gap-2 pr-7 pl-5 text-base" })
+const ctaArrow = "transition-transform duration-300 group-hover/button:translate-x-1"
+
+---
+
+<Layout>
+    <!-- Hero: full-bleed bar photo, message anchored bottom-left -->
+    <section class="relative isolate flex min-h-[100dvh] items-end overflow-hidden">
+      <div data-hero-image class="absolute inset-0 -z-10">
+        <Image
+          src={bar}
+          alt={t("hero.alt")}
+          widths={[768, 1280, 1920, 2560]}
+          width={2560}
+          sizes="100vw"
+          loading="eager"
+          fetchpriority="high"
+          class="h-full w-full object-cover object-[50%_45%]"
+        />
+      </div>
+      <!-- Scrim: bottom and left darken so text holds AA over the photo. -->
+      <div
+        class="absolute inset-0 -z-10 bg-gradient-to-t from-background via-background/55 to-background/10 md:bg-gradient-to-r md:from-background/95 md:via-background/50 md:to-transparent"
+      >
+      </div>
+      <div class="mx-auto w-full max-w-7xl px-4 pt-24 pb-16 md:px-8 md:pb-24">
+        <div class="max-w-3xl">
+          <p
+            data-hero
+            class="mb-6 text-xs tracking-[0.2em] text-primary uppercase"
+          >
+            {t("hero.eyebrow")}
+          </p>
+          <h1
+            data-hero
+            class="text-5xl leading-[1.1] [text-wrap:wrap] md:text-6xl lg:text-7xl"
+          >
+            {t("hero.title")} <em class="whitespace-nowrap not-italic text-primary">{t("hero.since")}</em>
+          </h1>
+          <p
+            data-hero
+            class="mt-6 max-w-[42ch] text-lg leading-relaxed text-foreground/85"
+          >
+            {t("hero.body")}
+          </p>
+          <div data-hero class="mt-10 flex flex-wrap gap-3">
+            <a href={path("/carta")} class={primaryCta}>
+              {t("cta.menu")}
+              <HugeiconsIcon icon={ArrowRight01Icon} size={18} strokeWidth={2} className={ctaArrow} />
+            </a>
+            <a href={mapsUrl} target="_blank" rel="noopener" class={secondaryCta}>
+              <HugeiconsIcon icon={Location01Icon} size={18} strokeWidth={1.75} />
+              {t("cta.directions")}
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- La casa: asymmetric split. The picture lamp "switches on" as you scroll (see script below). -->
+    <section id="casa" data-casa class="relative isolate scroll-mt-16 overflow-hidden">
+      <!-- Lights off: a near-black veil over the whole room, lifted as the lamp warms. -->
+      <div aria-hidden="true" data-casa-veil class="pointer-events-none absolute inset-0 -z-10 bg-[oklch(0.07_0.012_160)] opacity-0"></div>
+      <!-- The lamp's spill: warm light that leaves the frame and reaches the wall and the words. -->
+      <div
+        aria-hidden="true"
+        data-casa-spill
+        class="casa-spill pointer-events-none absolute inset-0 -z-10"
+      ></div>
+      <div
+        class="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-24 md:min-h-[100dvh] md:grid-cols-12 md:items-center md:gap-16 md:px-8 md:py-16"
+      >
+      <div class="relative isolate overflow-hidden md:col-span-5" data-lamp>
+        <!-- The wall in the dark. -->
+        <Image
+          src={horse}
+          alt=""
+          aria-hidden="true"
+          widths={[480, 720, 960, 1280]}
+          width={1280}
+          sizes="(min-width: 768px) 40vw, 100vw"
+          class="aspect-[4/5] w-full object-cover object-[50%_20%] brightness-[0.05] saturate-[0.4]"
+          data-lamp-photo
+        />
+        <!-- The same photo, lit: revealed through a cone of light that grows from the lamp. -->
+        <Image
+          src={horse}
+          alt={t("house.alt")}
+          widths={[480, 720, 960, 1280]}
+          width={1280}
+          sizes="(min-width: 768px) 40vw, 100vw"
+          class="lamp-lit absolute inset-0 h-full w-full object-cover object-[50%_20%]"
+          data-lamp-photo
+        />
+        <!-- Warm spill of the bulb on the wall, and the bulb's hotspot. -->
+        <div
+          aria-hidden="true"
+          data-lamp-glow
+          class="pointer-events-none absolute inset-0 bg-[radial-gradient(75%_55%_at_50%_9%,oklch(0.8_0.12_75/0.5),transparent_70%)] opacity-40 mix-blend-soft-light"
+        ></div>
+        <div
+          aria-hidden="true"
+          data-lamp-bulb
+          class="pointer-events-none absolute inset-0 bg-[radial-gradient(40%_4.5%_at_50%_9.5%,oklch(0.96_0.07_85/0.8),transparent_100%)] opacity-60 mix-blend-screen"
+        ></div>
+      </div>
+      <div class="md:col-span-6 md:col-start-7" data-lamp-copy>
+        <h2 class="text-4xl leading-[1.1] md:text-5xl">
+          {t("house.title")}
+        </h2>
+        <p class="mt-5 max-w-[48ch] text-lg leading-relaxed text-muted-foreground">
+          {t("house.body")}
+        </p>
+        <a href={path("/galeria")} class={`group ${linkLabel} mt-6 min-h-11 text-base`}>
+          {t("cta.gallery")}
+          <HugeiconsIcon icon={ArrowRight01Icon} size={18} strokeWidth={1.5} className={arrow} />
+        </a>
+      </div>
+      </div>
+    </section>
+
+    <!-- Especialidades: asymmetric bento (4 items, 4 cells) -->
+    <section class="mx-auto max-w-7xl px-4 py-24 md:px-8 md:py-32">
+      <h2
+        data-reveal
+        class="max-w-2xl text-4xl leading-[1.1] md:text-5xl"
+      >
+        {t("bento.title")}
+      </h2>
+      <div
+        class="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3 md:grid-rows-[repeat(2,minmax(20rem,auto))] md:gap-5"
+      >
+        <a
+          href={path("/carta") + "?tab=cocktails#beber"}
+          data-reveal
+          class="group flex flex-col justify-between gap-16 bg-card p-8 transition-colors hover:bg-secondary md:row-span-2 md:p-10"
+        >
+          <p class="font-heading text-8xl leading-none font-semibold tracking-[-0.04em] text-primary md:text-9xl">
+            {cocktailCount}
+          </p>
+          <div>
+            <h3 class="text-3xl leading-[1.1]">{t("bento.cocktails.title")}</h3>
+            <p class="mt-4 leading-relaxed text-muted-foreground">
+              {t("bento.cocktails.body")}
+            </p>
+            <span class={linkLabel}>
+              {t("bento.cocktails.cta")}
+              <HugeiconsIcon icon={ArrowRight01Icon} size={16} strokeWidth={1.5} className={arrow} />
+            </span>
+          </div>
+        </a>
+        {
+          [
+            {
+              img: sandwiches,
+              alt: t("bento.food.alt"),
+              title: t("bento.food.title"),
+              body: t("bento.food.body"),
+              href: path("/carta") + "?tab=raciones#comer",
+              cta: t("bento.food.cta"),
+              span: "md:col-span-2",
+            },
+            {
+              img: courtyard,
+              alt: t("bento.terrace.alt"),
+              title: t("bento.terrace.title"),
+              body: t("bento.terrace.body"),
+              href: path("/galeria"),
+              cta: t("cta.gallery"),
+              span: "",
+            },
+            {
+              img: pint,
+              alt: t("bento.coffee.alt"),
+              title: t("bento.coffee.title"),
+              body: t("bento.coffee.body"),
+              href: path("/carta") + "?tab=coffees#beber",
+              cta: t("bento.coffee.cta"),
+              span: "",
+            },
+          ].map((c) => (
+            <a
+              href={c.href}
+              data-reveal
+              class={`group relative isolate flex min-h-[22rem] items-end overflow-hidden md:min-h-0 ${c.span}`}
+            >
+              <Image
+                src={c.img}
+                alt={c.alt}
+                widths={[640, 960, 1440]}
+          width={1440}
+                sizes="(min-width: 768px) 60vw, 100vw"
+                class="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]"
+              />
+              <div class="absolute inset-0 -z-10 bg-gradient-to-t from-background/95 via-background/40 to-transparent" />
+              <div class="p-8 md:p-10">
+                <h3 class="text-3xl leading-[1.1]">{c.title}</h3>
+                <p class="mt-3 max-w-md leading-relaxed text-foreground/85">
+                  {c.body}
+                </p>
+                <span class={linkLabel}>
+                  {c.cta}
+                  <HugeiconsIcon icon={ArrowRight01Icon} size={16} strokeWidth={1.5} className={arrow} />
+                </span>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Hablan de nosotros: featured press quote + grouped external links -->
+    <section class="mx-auto max-w-7xl px-4 pb-24 md:px-8 md:pb-32">
+      <h2
+        data-reveal
+        class="text-4xl leading-[1.1] md:text-5xl"
+      >
+        {t("press.title")}
+      </h2>
+      <figure data-reveal class="mt-12 max-w-4xl md:mt-16">
+        <blockquote
+          class="font-heading text-3xl leading-[1.15] font-medium tracking-[-0.02em] md:text-5xl"
+        >
+          “{t("press.quote")}”
+        </blockquote>
+        <figcaption class="mt-6">
+          <a
+            href={travelerUrl}
+            target="_blank"
+            rel="noopener"
+            class="group inline-flex min-h-11 items-center gap-2 text-primary"
+          >
+            Condé Nast Traveler
+            <HugeiconsIcon icon={ArrowUpRight01Icon} size={18} strokeWidth={1.5} className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </a>
+        </figcaption>
+      </figure>
+      <div class="mt-16 grid grid-cols-1 gap-12 border-t border-border pt-12 md:mt-20 md:grid-cols-2 md:gap-16">
+        {
+          references.map((r) => (
+            <div data-reveal>
+              <h3 class="mb-6 font-sans text-sm text-muted-foreground">{r.group}</h3>
+              <ul class="grid gap-6">
+                {r.links.map((l) => (
+                  <li>
+                    <a
+                      href={l.href}
+                      target="_blank"
+                      rel="noopener"
+                      class="group flex items-baseline justify-between gap-6"
+                    >
+                      <span>
+                        <span class="font-heading text-2xl font-medium tracking-[-0.015em] transition-colors group-hover:text-primary md:text-3xl">
+                          {l.name}
+                        </span>
+                        <span class="mt-1 block text-muted-foreground">{l.desc}</span>
+                      </span>
+                      <HugeiconsIcon
+                        icon={ArrowUpRight01Icon}
+                        size={20}
+                        strokeWidth={1.5}
+                        className="shrink-0 text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
+                      />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Visita: centered closing CTA with address and opening hours -->
+    <section
+      id="visita"
+      class="scroll-mt-16 border-t border-border px-4 py-24 md:py-32"
+    >
+      <div data-reveal class="mx-auto max-w-3xl text-center">
+        <h2 class="text-4xl leading-[1.1] md:text-6xl">
+          {t("visit.title")}
+        </h2>
+        <p class="mx-auto mt-5 max-w-[48ch] text-lg text-muted-foreground">
+          {t("visit.body")}
+        </p>
+      </div>
+      <div
+        data-reveal
+        class="mx-auto mt-14 grid max-w-3xl grid-cols-1 gap-10 border-t border-border pt-10 sm:grid-cols-2 sm:gap-16"
+      >
+        <div>
+          <h3 class="mb-4 font-sans text-sm font-normal text-muted-foreground">{t("visit.address")}</h3>
+          <address class="text-xl leading-snug not-italic">
+            {address.street}<br />{address.city}
+          </address>
+          <a
+            href={mapsUrl}
+            target="_blank"
+            rel="noopener"
+            class={`${closingCta} mt-8`}
+          >
+            <HugeiconsIcon icon={Location01Icon} size={18} strokeWidth={1.75} />
+            {t("cta.directions")}
+          </a>
+        </div>
+        <div>
+          <h3 class="mb-4 font-sans text-sm font-normal text-muted-foreground">{t("visit.hours")}</h3>
+          <dl class="grid gap-2.5" data-hours>
+            {
+              hours.map((h) => (
+                <div
+                  data-days={h.days.join(",")}
+                  class="flex items-baseline justify-between gap-6 text-base data-[today]:text-primary"
+                >
+                  <dt>{t(h.label)}</dt>
+                  <dd class="text-muted-foreground tabular-nums in-data-[today]:text-primary">
+                    {formatHours(h.time, lang)}
+                  </dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+      </div>
+    </section>
+</Layout>
+
+<script>
+  import { gsap } from "gsap"
+  import { ScrollTrigger } from "gsap/ScrollTrigger"
+  import { onPage } from "@/lib/page"
+
+  gsap.registerPlugin(ScrollTrigger)
+
+  onPage(() => {
+    const section = document.querySelector<HTMLElement>("[data-casa]")
+    if (!section) return
+
+    const lit = section.querySelectorAll<HTMLElement>("[data-lamp-photo]")[1]
+    const photos = section.querySelectorAll<HTMLElement>("[data-lamp-photo]")
+    const glow = section.querySelector<HTMLElement>("[data-lamp-glow]")!
+    const bulb = section.querySelector<HTMLElement>("[data-lamp-bulb]")!
+    const veil = section.querySelector<HTMLElement>("[data-casa-veil]")!
+    const spill = section.querySelector<HTMLElement>("[data-casa-spill]")!
+    const lamp = section.querySelector<HTMLElement>("[data-lamp]")!
+
+    // Anchor the spill on the real lamp, wherever the layout puts it.
+    const aimSpill = () => {
+      const s = section.getBoundingClientRect()
+      const l = lamp.getBoundingClientRect()
+      spill.style.setProperty("--lx", `${l.left + l.width / 2 - s.left}px`)
+      spill.style.setProperty("--ly", `${l.top + l.height * 0.09 - s.top}px`)
+    }
+    aimSpill()
+    ScrollTrigger.addEventListener("refresh", aimSpill)
+    const copy = [...section.querySelector<HTMLElement>("[data-lamp-copy]")!.children]
+
+    // Default markup is the fully lit wall. Motion only darkens it first when it is allowed,
+    // so no-JS and reduced-motion visitors always see the photo.
+    const dark = () => {
+      gsap.set(lit, { "--rx": "0%", "--ry": "0%" })
+      gsap.set([glow, bulb], { opacity: 0 })
+      gsap.set(veil, { opacity: 1 })
+      gsap.set(spill, { "--sr": "0px", opacity: 0 })
+      gsap.set(photos, { scale: 1.06, transformOrigin: "50% 0%" })
+      // The words wait in the dark, barely there, until the light reaches them.
+      gsap.set(copy, { opacity: 0.04, y: 16 })
+    }
+
+    // A warming tungsten bulb: two stutters, then on. The spill stutters with it.
+    const flicker = () =>
+      gsap
+        .timeline()
+        .to([bulb, spill], { opacity: 1, duration: 0.05 })
+        .set(spill, { "--sr": "18vmax" }, 0)
+        .to([bulb, spill], { opacity: 0.1, duration: 0.08 })
+        .to([bulb, spill], { opacity: 0.85, duration: 0.05 }, "+=0.12")
+        .to([bulb, spill], { opacity: 0.2, duration: 0.06 })
+        .to(bulb, { opacity: 0.75, duration: 0.4, ease: "power2.out" }, "+=0.08")
+        .to(spill, { opacity: 1, duration: 0.4, ease: "power2.out" }, "<")
+
+    // The light pours down the wall, out of the frame and across the room to the words.
+    const pour = (tl: gsap.core.Timeline) =>
+      tl
+        .to(lit, { "--rx": "150%", "--ry": "170%", duration: 1, ease: "power2.inOut" }, 0)
+        .to(spill, { "--sr": "95vmax", duration: 1, ease: "power2.inOut" }, 0)
+        .to(veil, { opacity: 0, duration: 0.75, ease: "power2.inOut" }, 0.15)
+        .to(glow, { opacity: 0.85, duration: 0.45, ease: "power2.out" }, 0.05)
+        .to(glow, { opacity: 0.4, duration: 0.5, ease: "power1.inOut" }, 0.5)
+        .to(photos, { scale: 1, duration: 1, ease: "power2.out" }, 0)
+        .to(copy, { opacity: 1, y: 0, duration: 0.4, stagger: 0.07, ease: "power2.out" }, 0.42)
+
+    const mm = gsap.matchMedia()
+    mm.add(
+      {
+        desktop: "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
+        mobile: "(max-width: 767px) and (prefers-reduced-motion: no-preference)",
+      },
+      (ctx) => {
+        dark()
+        if (ctx.conditions!.desktop) {
+          // Pinned: the scroll is the dimmer switch.
+          let flickered = false
+          pour(
+            gsap.timeline({
+              scrollTrigger: {
+                trigger: section,
+                start: "top top",
+                end: "+=110%",
+                pin: true,
+                scrub: 0.8,
+                // Refresh this pin before the page's other triggers so their offsets include its spacer.
+                refreshPriority: 1,
+                onUpdate: (st) => {
+                  if (!flickered && st.progress > 0.01) {
+                    flickered = true
+                    flicker()
+                  }
+                },
+              },
+            })
+          )
+        } else {
+          // Phones: no scroll-jacking; the sequence plays once on arrival.
+          const tl = gsap.timeline({ paused: true, defaults: { duration: 1 } })
+          pour(tl.timeScale(0.55))
+          ScrollTrigger.create({
+            trigger: section,
+            start: "top 65%",
+            once: true,
+            onEnter: () => {
+              flicker()
+              gsap.delayedCall(0.55, () => void tl.play())
+            },
+          })
+        }
+      }
+    )
+
+    return () => {
+      mm.revert()
+      ScrollTrigger.removeEventListener("refresh", aimSpill)
+    }
+  })
+</script>
