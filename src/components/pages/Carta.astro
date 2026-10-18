@@ -1,6 +1,6 @@
 ---
 import Layout from "@/layouts/main.astro"
-import { Menu } from "@/components/menu"
+import Menu from "@/components/menu.astro"
 import { drinkGroups, foodGroups } from "@/i18n/menu"
 import { allergenNames } from "@/i18n/ui"
 import { getLangFromUrl, getTranslations } from "@/i18n/utils"
@@ -18,21 +18,23 @@ const t = getTranslations(lang)
       {t("menu.title")}
     </h1>
 
-    <section aria-labelledby="comer" class="mt-16 md:mt-24">
-      <h2 id="comer" data-reveal class="mb-10 scroll-mt-24 text-4xl leading-[1.1] md:text-5xl">
+    <!-- Anchors sit on the sections, not the headings: the reveal transform on a heading
+         would throw off where the browser scrolls to. -->
+    <section id="comer" aria-labelledby="comer-title" class="scroll-mt-8 mt-16 md:mt-24">
+      <h2 id="comer-title" data-reveal class="mb-10 text-4xl leading-[1.1] md:text-5xl">
         {t("menu.eat")}
       </h2>
       <div data-reveal>
-        <Menu client:load groups={foodGroups(lang)} lang={lang} allergensLabel={t("menu.allergens")} />
+        <Menu groups={foodGroups(lang)} lang={lang} allergensLabel={t("menu.allergens")} labelledBy="comer-title" />
       </div>
     </section>
 
-    <section aria-labelledby="beber" class="mt-24 md:mt-32">
-      <h2 id="beber" data-reveal class="mb-10 scroll-mt-24 text-4xl leading-[1.1] md:text-5xl">
+    <section id="beber" aria-labelledby="beber-title" class="scroll-mt-8 mt-24 md:mt-32">
+      <h2 id="beber-title" data-reveal class="mb-10 text-4xl leading-[1.1] md:text-5xl">
         {t("menu.drink")}
       </h2>
       <div data-reveal>
-        <Menu client:load groups={drinkGroups(lang)} lang={lang} allergensLabel={t("menu.allergens")} />
+        <Menu groups={drinkGroups(lang)} lang={lang} allergensLabel={t("menu.allergens")} labelledBy="beber-title" />
       </div>
     </section>
 

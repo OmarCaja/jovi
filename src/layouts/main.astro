@@ -5,8 +5,12 @@ import { buttonVariants } from "@/components/ui/button"
 import { Image } from "astro:assets"
 import { address, hours, mapsUrl } from "@/lib/site"
 import bar from "@/assets/gallery/4.jpg"
+// Same files the @fontsource CSS loads (same hashed URL), preloaded so the hero
+// headline doesn't paint in the fallback font first.
+import bricolageLatin from "@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2?url"
+import manropeLatin from "@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url"
 import { alternatePath, formatHours, getLangFromUrl, getTranslatedPath, getTranslations, withBase } from "@/i18n/utils"
-import { HugeiconsIcon } from "@hugeicons/react"
+import Icon from "@/components/icon.astro"
 import { InstagramIcon, Location01Icon } from "@hugeicons/core-free-icons"
 
 interface Props {
@@ -67,6 +71,8 @@ const pageSwap = {
     <meta name="apple-mobile-web-app-title" content="Jovi" />
     <link rel="manifest" href={withBase("/favicon/site.webmanifest")} />
     <title>{title}</title>
+    <link rel="preload" href={bricolageLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={manropeLatin} as="font" type="font/woff2" crossorigin />
     <ClientRouter />
     <link rel="alternate" hreflang={otherLang} href={new URL(switchHref, Astro.site)} />
     <script is:inline>
@@ -74,6 +80,11 @@ const pageSwap = {
     </script>
   </head>
   <body class="antialiased">
+    <!-- Skip link: parked above the viewport, slides in on keyboard focus. -->
+    <a
+      href="#main"
+      class={buttonVariants({ className: "fixed top-[calc(0.75rem+env(safe-area-inset-top))] left-4 z-50 h-11 -translate-y-[300%] px-6 focus:translate-y-0" })}
+    >{t("nav.skip")}</a>
     <header
       transition:name="site-header"
       transition:animate="none"
@@ -106,15 +117,14 @@ const pageSwap = {
             href={switchHref}
             hreflang={otherLang}
             lang={otherLang}
-            aria-label={t("lang.switch")}
             class="grid h-11 min-w-11 place-items-center rounded-full px-3 text-sm font-semibold tracking-[0.04em] text-muted-foreground uppercase transition-colors hover:bg-foreground/10 hover:text-foreground md:h-10"
-          >{otherLang}</a>
+          >{otherLang}<span class="sr-only">, {t("lang.switch")}</span></a>
           <a
             href={mapsUrl}
             target="_blank"
             rel="noopener"
             class={buttonVariants({ variant: "outline", className: "h-10 px-5 max-md:hidden" })}
-            >{t("cta.directions")}</a
+            >{t("cta.directions")}<span class="sr-only"> {t("newTab")}</span></a
           >
         <button
           type="button"
@@ -195,24 +205,24 @@ const pageSwap = {
               rel="noopener"
               class={buttonVariants({ size: "lg", className: "h-14 flex-1 gap-2 text-base" })}
             >
-              <HugeiconsIcon icon={Location01Icon} size={18} strokeWidth={1.75} />
-              {t("cta.directions")}
+              <Icon icon={Location01Icon} size={18} strokeWidth={1.75} />
+              {t("cta.directions")}<span class="sr-only"> {t("newTab")}</span>
             </a>
             <a
               href="https://www.instagram.com/tabernajovi/"
               target="_blank"
               rel="noopener"
-              aria-label={t("instagram")}
+              aria-label={`${t("instagram")} ${t("newTab")}`}
               class="grid size-14 place-items-center rounded-full border border-foreground/30 transition-colors hover:border-foreground/60 hover:bg-foreground/10"
             >
-              <HugeiconsIcon icon={InstagramIcon} size={22} strokeWidth={1.5} />
+              <Icon icon={InstagramIcon} size={22} strokeWidth={1.5} />
             </a>
           </div>
         </div>
       </nav>
     </div>
 
-    <main transition:animate={pageSwap}>
+    <main id="main" tabindex="-1" class="outline-none" transition:animate={pageSwap}>
       <slot />
     </main>
 
@@ -230,10 +240,10 @@ const pageSwap = {
             href="https://www.instagram.com/tabernajovi/"
             target="_blank"
             rel="noopener"
-            aria-label={t("instagram")}
+            aria-label={`${t("instagram")} ${t("newTab")}`}
             class="-m-3 p-3 transition-colors hover:text-foreground"
           >
-            <HugeiconsIcon icon={InstagramIcon} size={20} strokeWidth={1.5} />
+            <Icon icon={InstagramIcon} size={20} strokeWidth={1.5} />
           </a>
         </div>
       </div>
@@ -268,7 +278,10 @@ const pageSwap = {
         // ponytail: ignores the after-midnight tail of the previous night (Saturday 01:00 still shows Saturday).
         const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Madrid" })).getDay()
         document.querySelectorAll<HTMLElement>("[data-days]").forEach((row) => {
-          if (row.dataset.days!.split(",").map(Number).includes(today)) row.dataset.today = ""
+          if (row.dataset.days!.split(",").map(Number).includes(today)) {
+            row.dataset.today = ""
+            row.setAttribute("aria-current", "date")
+          }
         })
 
         // Mobile menu.

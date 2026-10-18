@@ -26,6 +26,8 @@ export const ui = {
     "nav.open": "Abrir menú",
     "nav.close": "Cerrar menú",
     "lang.switch": "Read in English",
+    "nav.skip": "Saltar al contenido",
+    "newTab": "(se abre en otra pestaña)",
 
     "cta.menu": "Ver la carta",
     "cta.directions": "Cómo llegar",
@@ -123,6 +125,8 @@ export const ui = {
     "nav.open": "Open menu",
     "nav.close": "Close menu",
     "lang.switch": "Leer en español",
+    "nav.skip": "Skip to content",
+    "newTab": "(opens in a new tab)",
 
     "cta.menu": "See the menu",
     "cta.directions": "Get directions",

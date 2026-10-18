@@ -98,6 +98,16 @@
         "role": "neutral",
         "displayName": "Hairline",
         "canonical": "oklch(0.94 0.012 85 / 14%)"
+      },
+      "night-veil": {
+        "role": "neutral",
+        "displayName": "Night Veil",
+        "canonical": "oklch(0.07 0.012 160)"
+      },
+      "filament": {
+        "role": "neutral",
+        "displayName": "Filament",
+        "canonical": "oklch(0.96 0.07 85)"
       }
     },
     "typographyMeta": {
@@ -155,7 +165,7 @@
       },
       {
         "name": "picture-light",
-        "value": "mask radial-gradient(var(--rx) var(--ry) at 50% 9%) 0 to 150%/170% power2.inOut; bulb flicker; photo scale 1.06 to 1; desktop pinned scrub 0.8 over +=110%; mobile plays once at 0.55x",
+        "value": "light layer (static radial mask, centred on the lamp at 50% 9%) scale 0.02 to 1 with inner counter-scale, power2.inOut; spill scale 0 to 1; bulb flicker; photo scale 1.06 to 1; desktop pinned scrub 0.8 over +=110%; mobile plays once at 0.55x",
         "purpose": "Home La casa: the picture lamp switches on and light pours over the painting."
       },
       {

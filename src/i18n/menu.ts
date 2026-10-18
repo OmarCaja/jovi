@@ -1,7 +1,14 @@
-import type { MenuGroup } from "@/components/menu"
 import drinks from "@/data/drinks.json"
 import food from "@/data/food.json"
 import type { Lang } from "./ui"
+
+type Item = { title: string; desc?: string; allergens?: string; price: string }
+export type MenuGroup = {
+  id: string
+  label: string
+  note?: string
+  sections: { title?: string; items: Item[] }[]
+}
 
 // English for the menu data. The JSON stays the Spanish source of truth; anything not
 // listed here (brand names, cocktail names) is the same in both languages.

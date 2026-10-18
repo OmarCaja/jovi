@@ -1,6 +1,6 @@
 ---
 import { Image, getImage } from "astro:assets"
-import { HugeiconsIcon } from "@hugeicons/react"
+import Icon from "@/components/icon.astro"
 import { ArrowLeft01Icon, ArrowRight01Icon, Cancel01Icon } from "@hugeicons/core-free-icons"
 import Layout from "@/layouts/main.astro"
 import { getLangFromUrl, getTranslations } from "@/i18n/utils"
@@ -90,7 +90,7 @@ const roundBtn =
     />
     <div data-ui>
       <button type="button" data-close aria-label={t("gallery.close")} class={`${roundBtn} absolute top-[max(1rem,env(safe-area-inset-top))] right-4 md:top-6 md:right-6`}>
-        <HugeiconsIcon icon={Cancel01Icon} size={20} strokeWidth={1.75} />
+        <Icon icon={Cancel01Icon} size={20} strokeWidth={1.75} />
       </button>
       <button
         type="button"
@@ -98,7 +98,7 @@ const roundBtn =
         aria-label={t("gallery.prev")}
         class={`${roundBtn} absolute bottom-[max(1.5rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-[calc(100%+0.5rem)] md:top-1/2 md:bottom-auto md:left-6 md:translate-x-0 md:-translate-y-1/2`}
       >
-        <HugeiconsIcon icon={ArrowLeft01Icon} size={20} strokeWidth={1.75} />
+        <Icon icon={ArrowLeft01Icon} size={20} strokeWidth={1.75} />
       </button>
       <button
         type="button"
@@ -106,7 +106,7 @@ const roundBtn =
         aria-label={t("gallery.next")}
         class={`${roundBtn} absolute bottom-[max(1.5rem,env(safe-area-inset-bottom))] left-1/2 translate-x-2 md:top-1/2 md:right-6 md:bottom-auto md:left-auto md:translate-x-0 md:-translate-y-1/2`}
       >
-        <HugeiconsIcon icon={ArrowRight01Icon} size={20} strokeWidth={1.75} />
+        <Icon icon={ArrowRight01Icon} size={20} strokeWidth={1.75} />
       </button>
     </div>
   </dialog>

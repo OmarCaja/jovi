@@ -32,7 +32,7 @@ Read these before UI or copy work. They record decisions the user made in earlie
 
 **i18n (Astro i18n routing).** Spanish is the default at `/`, English at `/en/` (`astro.config.mjs`, `prefixDefaultLocale: false`). Page bodies live once in `src/components/pages/{Home,Carta,Galeria}.astro`; `src/pages/*.astro` and `src/pages/en/*.astro` are one-line wrappers that render them. Each page component reads its language with `getLangFromUrl(Astro.url)`.
 - UI strings: `src/i18n/ui.ts` (typed dictionary; every Spanish key must exist in English).
-- Menu data: `src/data/food.json` and `drinks.json` are the Spanish source of truth. `src/i18n/menu.ts` maps Spanish names to English and builds the `MenuGroup[]` passed to `src/components/menu.tsx`. Names not in the map (brands, cocktail names) stay as-is. `drinks.json` uses the misspelled key `tittle`.
+- Menu data: `src/data/food.json` and `drinks.json` are the Spanish source of truth. `src/i18n/menu.ts` maps Spanish names to English and builds the `MenuGroup[]` passed to `src/components/menu.astro` (server-rendered tabs plus a small script; no React island). Names not in the map (brands, cocktail names) stay as-is. `drinks.json` uses the misspelled key `tittle`.
 - Helpers in `src/i18n/utils.ts` are named `get*` (not the docs' `use*`), because the React-hooks lint rule flags `use*` names.
 - **All internal links must go through `getTranslatedPath(lang)(path)`** (or `withBase`). It adds the language prefix and `import.meta.env.BASE_URL`, so a future `base` change needs no page edits.
 
@@ -45,7 +45,7 @@ Read these before UI or copy work. They record decisions the user made in earlie
 - Gallery lightbox (`Galeria.astro`): native `<dialog>` with a shared-element FLIP from thumbnail to full screen.
 - Mobile menu (layout): full-screen sheet; the page behind is made `inert`.
 
-**Styling.** Tailwind v4 via the Vite plugin; theme tokens are CSS variables on `:root` in `src/styles/global.css` (shadcn variable names, `--radius: 0`). shadcn components use Base UI primitives (`src/components/ui`). Icons come from Hugeicons only. Images are imported from `src/assets/` and rendered with `astro:assets` `<Image>` (always pass `widths` and `width`).
+**Styling.** Tailwind v4 via the Vite plugin; theme tokens are CSS variables on `:root` in `src/styles/global.css` (shadcn variable names, `--radius: 0`). shadcn components use Base UI primitives (`src/components/ui`); only `buttonVariants` is used, server-side. No page ships React: the `@astrojs/react` integration is removed, so re-add it to `astro.config.mjs` before using a shadcn component as an island. Icons come from Hugeicons only, rendered as static SVG through `src/components/icon.astro`. Images are imported from `src/assets/` and rendered with `astro:assets` `<Image>` (always pass `widths` and `width`).
 
 ## Deploy
 

@@ -3,7 +3,7 @@ import { Image } from "astro:assets"
 import Layout from "@/layouts/main.astro"
 import { buttonVariants } from "@/components/ui/button"
 import { address, hours, mapsUrl } from "@/lib/site"
-import { HugeiconsIcon } from "@hugeicons/react"
+import Icon from "@/components/icon.astro"
 import { ArrowRight01Icon, ArrowUpRight01Icon, Location01Icon } from "@hugeicons/core-free-icons"
 import drinks from "@/data/drinks.json"
 import { formatHours, getLangFromUrl, getTranslatedPath, getTranslations } from "@/i18n/utils"
@@ -32,7 +32,7 @@ const references = [
     group: t("press.guides"),
     links: [
       { name: "Guía Repsol", desc: t("press.repsol"), href: "https://www.guiarepsol.com/es/fichas/solete/jovi-333161/" },
-      { name: "Visita Cuenca", desc: t("press.visitCuenca"), href: "https://visitacuenca.es/en/node/20541" },
+      { name: "Visita Cuenca", desc: t("press.visitCuenca"), href: "https://visitacuenca.es/es/node/20541" },
       { name: "Toppings and Salads", desc: t("press.toppings"), href: "https://www.toppingsandsalads.es/bar-de-tapas/taberna-jovi/" },
     ],
   },
@@ -100,11 +100,11 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
           <div data-hero class="mt-10 flex flex-wrap gap-3">
             <a href={path("/carta")} class={primaryCta}>
               {t("cta.menu")}
-              <HugeiconsIcon icon={ArrowRight01Icon} size={18} strokeWidth={2} className={ctaArrow} />
+              <Icon icon={ArrowRight01Icon} size={18} strokeWidth={2} class={ctaArrow} />
             </a>
             <a href={mapsUrl} target="_blank" rel="noopener" class={secondaryCta}>
-              <HugeiconsIcon icon={Location01Icon} size={18} strokeWidth={1.75} />
-              {t("cta.directions")}
+              <Icon icon={Location01Icon} size={18} strokeWidth={1.75} />
+              {t("cta.directions")}<span class="sr-only"> {t("newTab")}</span>
             </a>
           </div>
         </div>
@@ -112,7 +112,7 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
     </section>
 
     <!-- La casa: asymmetric split. The picture lamp "switches on" as you scroll (see script below). -->
-    <section id="casa" data-casa class="relative isolate scroll-mt-16 overflow-hidden">
+    <section id="casa" data-casa class="relative isolate overflow-hidden">
       <!-- Lights off: a near-black veil over the whole room, lifted as the lamp warms. -->
       <div aria-hidden="true" data-casa-veil class="pointer-events-none absolute inset-0 -z-10 bg-[oklch(0.07_0.012_160)] opacity-0"></div>
       <!-- The lamp's spill: warm light that leaves the frame and reaches the wall and the words. -->
@@ -155,7 +155,7 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
         <div
           aria-hidden="true"
           data-lamp-glow
-          class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_closest-side_at_50%_38%,oklch(0.8_0.12_75/0.5),transparent)] opacity-40 mix-blend-soft-light"
+          class="lamp-glow pointer-events-none absolute inset-0 opacity-40 mix-blend-soft-light"
         ></div>
         <div
           aria-hidden="true"
@@ -172,7 +172,7 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
         </p>
         <a href={path("/galeria")} class={`group ${linkLabel} mt-6 min-h-11 text-base`}>
           {t("cta.gallery")}
-          <HugeiconsIcon icon={ArrowRight01Icon} size={18} strokeWidth={1.5} className={arrow} />
+          <Icon icon={ArrowRight01Icon} size={18} strokeWidth={1.5} class={arrow} />
         </a>
       </div>
       </div>
@@ -204,7 +204,7 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
             </p>
             <span class={linkLabel}>
               {t("bento.cocktails.cta")}
-              <HugeiconsIcon icon={ArrowRight01Icon} size={16} strokeWidth={1.5} className={arrow} />
+              <Icon icon={ArrowRight01Icon} size={16} strokeWidth={1.5} class={arrow} />
             </span>
           </div>
         </a>
@@ -259,7 +259,7 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
                 </p>
                 <span class={linkLabel}>
                   {c.cta}
-                  <HugeiconsIcon icon={ArrowRight01Icon} size={16} strokeWidth={1.5} className={arrow} />
+                  <Icon icon={ArrowRight01Icon} size={16} strokeWidth={1.5} class={arrow} />
                 </span>
               </div>
             </a>
@@ -289,8 +289,8 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
             rel="noopener"
             class="group inline-flex min-h-11 items-center gap-2 text-primary"
           >
-            <span translate="no">Condé Nast Traveler</span>
-            <HugeiconsIcon icon={ArrowUpRight01Icon} size={18} strokeWidth={1.5} className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            <span translate="no">Condé Nast Traveler</span><span class="sr-only"> {t("newTab")}</span>
+            <Icon icon={ArrowUpRight01Icon} size={18} strokeWidth={1.5} class="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </a>
         </figcaption>
       </figure>
@@ -313,12 +313,13 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
                           {l.name}
                         </span>
                         <span class="mt-1 block text-muted-foreground">{l.desc}</span>
+                        <span class="sr-only"> {t("newTab")}</span>
                       </span>
-                      <HugeiconsIcon
+                      <Icon
                         icon={ArrowUpRight01Icon}
                         size={20}
                         strokeWidth={1.5}
-                        className="shrink-0 text-muted-foreground transition-[translate,color] duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
+                        class="shrink-0 text-muted-foreground transition-[translate,color] duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
                       />
                     </a>
                   </li>
@@ -333,7 +334,7 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
     <!-- Visita: centered closing CTA with address and opening hours -->
     <section
       id="visita"
-      class="scroll-mt-16 border-t border-border px-4 py-24 md:py-32"
+      class="border-t border-border px-4 py-24 md:py-32"
     >
       <div data-reveal class="mx-auto max-w-3xl text-center">
         <h2 class="text-4xl leading-[1.1] md:text-6xl">
@@ -358,8 +359,8 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
             rel="noopener"
             class={`${closingCta} mt-8`}
           >
-            <HugeiconsIcon icon={Location01Icon} size={18} strokeWidth={1.75} />
-            {t("cta.directions")}
+            <Icon icon={Location01Icon} size={18} strokeWidth={1.75} />
+            {t("cta.directions")}<span class="sr-only"> {t("newTab")}</span>
           </a>
         </div>
         <div>
@@ -371,7 +372,10 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
                   data-days={h.days.join(",")}
                   class="flex items-baseline justify-between gap-6 text-base data-[today]:text-primary"
                 >
-                  <dt>{t(h.label)}</dt>
+                  <dt>
+                    {t(h.label)}
+                    <span class="ml-1.5 hidden text-sm in-data-[today]:inline">· {t("today").toLowerCase()}</span>
+                  </dt>
                   <dd class="text-muted-foreground tabular-nums in-data-[today]:text-primary">
                     {formatHours(h.time, lang)}
                   </dd>

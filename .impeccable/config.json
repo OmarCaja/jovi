@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "hero-eyebrow-chip",
+        "value": "*",
+        "files": [
+          "src/components/pages/Home.astro"
+        ],
+        "createdAt": "2026-10-18T20:31:46.178Z",
+        "reason": "Deliberate exception kept by the owner on 2026-10-18 (DESIGN.md, Typography > Hero eyebrow)"
+      }
+    ]
+  }
+}

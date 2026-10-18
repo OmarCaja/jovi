@@ -9,6 +9,8 @@ colors:
   bone: "oklch(0.94 0.012 85)"
   bone-muted: "oklch(0.76 0.015 100)"
   hairline: "oklch(0.94 0.012 85 / 14%)"
+  night-veil: "oklch(0.07 0.012 160)"
+  filament: "oklch(0.96 0.07 85)"
 typography:
   display:
     fontFamily: "Bricolage Grotesque Variable, ui-sans-serif, system-ui, sans-serif"
@@ -125,6 +127,10 @@ A night palette from one room: three steps of bottle green, a bone for text, and
 - **Bottle Green** (`bottle-green`): the page background on every page, and the text colour on amber buttons.
 - **Raised Bottle Green** (`bottle-green-raised`): the tinted bento tile and the menu section band; one step up for grouping without a border.
 - **Lifted Bottle Green** (`bottle-green-lifted`): hover fill on the tinted tile.
+### Lamp effects (The Picture Light only)
+- **Night Veil** (`night-veil`): the near-black that turns La casa's lights off before the lamp warms. Never a surface.
+- **Filament** (`filament`): the bulb's hotspot, a warm white just above Bone, at 80% in a screen-blended gradient. It is the lit filament, not a second accent, so it never appears outside the lamp.
+- The wall glow and the room spill are Lamp Amber itself (`var(--primary)` mixed with transparent), so they follow the accent.
 - **Bone** (`bone`): headings, body copy on photos, menu item names.
 - **Muted Bone** (`bone-muted`): secondary text such as descriptions, prices, allergen lines, nav links at rest and footer text. It passes AA on all three greens.
 - **Hairline** (`hairline`): 1px dividers (nav and footer rules, the tab list baseline, the dotted price leaders, outline button borders).
@@ -148,6 +154,7 @@ A night palette from one room: three steps of bottle green, a bone for text, and
 - **Body** (400, 18px, 1.625): lead paragraphs under headings, with a measure capped near 42-48ch.
 - **Body small** (400, 16px, 1.5): menu items, tile copy and buttons.
 - **Label** (500, 14px): nav links, link labels with arrows, allergen and footer text.
+- **Hero eyebrow (deliberate exception)** (400, 12px, uppercase, tracked 0.2em, amber): one place line above the home hero headline only ("Casco antiguo de Cuenca" / "Cuenca old town"). Eyebrows are otherwise banned in this system; the owner chose on 2026-10-18 to keep this one, because the location answers a tourist's first question before the headline does. Never add another eyebrow or kicker anywhere else.
 - **Display numeral:** the cocktail count is set at 128px, semibold, tracked to -0.04em, in amber.
 
 ### Named Rules
@@ -168,7 +175,7 @@ Section compositions vary deliberately, and each family appears once per page:
 
 The menu uses a tabbed list flowing in 1, 2 or 3 columns. The gallery is a masonry of 1, 2 or 3 columns with mixed aspect ratios.
 
-Every multi-column layout collapses to a single column below 768px. Heroes use `min-height: 100dvh`. The fixed nav is 64px tall, and anchors are offset to clear it.
+Every multi-column layout collapses to a single column below 768px. Heroes use `min-height: 100svh` (not `dvh`, which resizes while iOS Safari's toolbar collapses and makes scrolling stutter). The fixed nav is 64px tall; `scroll-padding-top` on `html` (64px plus the top safe area) keeps anchors and focused elements clear of it.
 
 ## Elevation & Depth
 
@@ -198,13 +205,15 @@ Sharp and quiet, in a pill: a block of lamp light, or a fine outline.
 ### Navigation
 A fixed 64px bar in translucent bottle green with a backdrop blur, a hairline bottom rule and safe-area padding at the top.
 - **Desktop (768px and up):** the wordmark sits left in Bricolage semibold. Links in the centre are 14px Manrope in Muted Bone, turning Bone on hover and on the current page. "Cómo llegar" sits right as the outline button.
-- **Mobile:** the wordmark and a borderless 44px round menu button with two hairline bars, which rotate into an × (500ms, `cubic-bezier(0.16, 1, 0.3, 1)`).
+- **Mobile:** the wordmark, the language switch ("EN" / "ES", 44px) and a borderless 44px round menu button with two hairline bars, which rotate into an × (500ms, `cubic-bezier(0.16, 1, 0.3, 1)`).
+- **Language switch:** shows only the other language's code; its accessible name starts with that code ("EN, Read in English") so voice control users can say what they see.
+- **Skip link:** the first focusable element, an amber pill that appears top-left on focus and jumps to `<main>`.
 
 ### Mobile Menu (signature)
 The bar after dark, in your pocket.
 - **Sheet:** a full-screen Bottle Green sheet under the header, over the bar photo at 35% behind a bottle-green gradient. The header turns solid while the menu is open.
 - **Links:** Inicio, La casa, Carta and Galería in Bricolage at 44 to 60px (`clamp(2.75rem, 13vw, 3.75rem)`). The current page shows in amber.
-- **Thumb zone:** today's hours ("Hoy 16:00 a 2:00" with the time in amber), the address, a 56px full-width amber "Cómo llegar" pill and a 56px round Instagram button, all inset by the bottom safe area.
+- **Thumb zone:** today's hours ("Hoy de 16:00 a 2:00", or "Hoy cerrado", with the time in amber), the address, a 56px full-width amber "Cómo llegar" pill and a 56px round Instagram button, all inset by the bottom safe area.
 - **Motion:** the sheet drops in like a blind (clip-path, 0.6s `expo.out`) as the photo settles from 108%. Each link rises out of its own mask, 60ms apart, and the bottom block fades up. Closing is faster (0.4s `power3.inOut`). Under reduced motion it becomes a 0.2s fade.
 - **Behaviour:** the page behind becomes inert and stops scrolling. Focus moves to the first link. Escape closes the menu and returns focus to the button, choosing a link closes it, and widening past 768px closes it.
 
@@ -216,14 +225,16 @@ Every tap target is at least 44px. The menu tabs become one horizontally scrolla
 - **Tinted tile:** a Raised Bottle Green fill with 40px padding and a large amber numeral. Hover lifts it to Lifted Bottle Green.
 
 ### Menu (signature)
-- **Tabs:** a line-style tab list, 16px Manrope. Muted Bone at rest, Bone when active, with a 2px amber underline. Tabs wrap onto two lines on mobile.
+- **Tabs:** a line-style tab list, 16px Manrope. Muted Bone at rest, Bone when active, with a 2px amber underline. On mobile they form one horizontally scrollable row (see Touch); from 768px they wrap. Built as a server-rendered Astro component with a small script (`src/components/menu.astro`), not a React island; arrow keys and Home/End move between tabs. Without JS the tab row is hidden and every group shows in full under its own heading. A first sub-section title that repeats the tab name is not shown.
 - **Item row:** the name in Bone, a dotted Hairline leader, then the price in Muted Bone with tabular figures and no wrapping. An optional 14px description and allergen line follows in Muted Bone.
 - **Sub-section titles:** 24px Bricolage in amber.
 - **Notes and allergen legend:** 14px Muted Bone, set below a hairline.
 - **Deep links:** `?tab=<id>` selects a tab.
 
 ### Link Label
-Amber text in 14-16px Manrope with a 1.5px-stroke arrow (Hugeicons) that slides on hover. External links use an up-right arrow and nudge diagonally.
+Amber text in 14-16px Manrope with a 1.5px-stroke arrow (Hugeicons) that slides on hover. External links use an up-right arrow and nudge diagonally. Every link that opens a new tab carries visually hidden text ("(se abre en otra pestaña)" / "(opens in a new tab)"); icon-only ones carry it in their `aria-label`.
+### Opening Hours
+The closing hours list marks today in amber and, so colour is not the only cue, adds a small "· hoy" after the day and `aria-current="date"` on the row. Today is worked out client-side in the Europe/Madrid time zone.
 
 ### Press Link Row
 A source name in Bricolage at 24-30px and weight 500, with a Muted Bone descriptor below and an up-right arrow aligned right. The name turns amber on hover. Rows are grouped under small Muted Bone group labels and separated by space, never by dividers.
@@ -233,8 +244,8 @@ Moving between pages swaps only the content, using Astro's `<ClientRouter />`. T
 
 ### The Picture Light (signature, home "La casa")
 The lamp switches on.
-- **Build:** the section is full-bleed. A near-black veil (`oklch(0.07 0.012 160)`) turns the room's lights off, and an amber spill (`.casa-spill`) anchored on the lamp grows from 0 to 95vmax, so the light leaves the frame and reaches the words, which wait at 4% opacity. The horse painting photo is stacked twice. Underneath is the wall in the dark (brightness 5%, saturation 40%). On top is the lit photo, shown through an elliptical mask hung from the picture lamp at 50% 9%. A warm amber soft-light glow and a wide bulb hotspot sit over both.
-- **Desktop:** the section pins for 110% of a viewport and the scroll acts as the dimmer: scrub 0.8, refreshed before other triggers. The bulb stutters on twice like warming tungsten. The cone pours down the wall (mask 0 to 150% and 170%, `power2.inOut`) while the photo settles from 106%. The glow peaks, then relaxes, and the heading, text and link rise in at 62% of the scroll.
+- **Build:** the section is full-bleed. A near-black veil (`oklch(0.07 0.012 160)`) turns the room's lights off, and an amber spill (`.casa-spill`) anchored on the lamp (a 133vmax circle) scales up from 0, so the light leaves the frame and reaches the words, which wait at 4% opacity. The horse painting photo is stacked twice. Underneath is the wall in the dark (brightness 5%, saturation 40%). On top is the lit photo inside a large square layer centred on the picture lamp (50% 9%) with a static radial mask; that layer scales up from 2% while an inner layer counter-scales, so the photo stays put and only transforms animate (smooth on iOS). A warm amber soft-light glow and a wide bulb hotspot sit over both.
+- **Desktop:** the section pins for 110% of a viewport and the scroll acts as the dimmer: scrub 0.8, refreshed before other triggers. The bulb stutters on twice like warming tungsten. The light pours down the wall (scale 0.02 to 1, `power2.inOut`) while the photo settles from 106%. The glow peaks, then relaxes, and the heading, text and link rise in at 62% of the scroll.
 - **Mobile:** no pinning. The same sequence plays once on arrival at 0.55× speed, after the flicker.
 - **Fallback:** the markup's default is the fully lit wall, so without JS or with reduced motion the photo is simply lit.
 
