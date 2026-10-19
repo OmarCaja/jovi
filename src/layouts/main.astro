@@ -94,7 +94,15 @@ const pageSwap = {
         class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 md:px-8"
         aria-label={t("nav.primary")}
       >
-        <a href={home} class="flex min-h-11 items-center font-heading text-2xl font-semibold tracking-[-0.03em]">Taberna Jovi</a>
+        <a href={home} class="flex min-h-11 items-center">
+          <!-- The icon is white on solid black: as a luminance mask the black drops out and the lines take the theme colour. -->
+          <span
+            role="img"
+            aria-label="Taberna Jovi"
+            class="block size-12 bg-foreground transition-colors hover:bg-primary"
+            style={`mask: url(${withBase("/favicon/web-app-manifest-192x192.png")}) center / contain no-repeat luminance`}
+          ></span>
+        </a>
         <ul
           class="hidden items-center gap-8 text-sm text-muted-foreground md:flex"
         >
@@ -253,6 +261,7 @@ const pageSwap = {
       import { gsap } from "gsap"
       import { ScrollTrigger } from "gsap/ScrollTrigger"
       import { onPage } from "@/lib/page"
+      import { openingDay } from "@/lib/site"
 
       gsap.registerPlugin(ScrollTrigger)
 
@@ -274,9 +283,13 @@ const pageSwap = {
       matchMedia("(min-width: 768px)").addEventListener("change", (e) => e.matches && setMenu(false))
 
       onPage(() => {
+        // Deep links (/carta/#beber): the router's smooth hash scroll starts from the previous
+        // page's scroll position, which the shorter page clamps to its bottom, and Safari can
+        // stop it there. Land on the anchor directly once the new page is in place.
+        if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: "instant" })
+
         // Today's opening hours, in Cuenca's time zone (home hours table and the mobile menu).
-        // ponytail: ignores the after-midnight tail of the previous night (Saturday 01:00 still shows Saturday).
-        const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Madrid" })).getDay()
+        const today = openingDay(new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Madrid" })))
         document.querySelectorAll<HTMLElement>("[data-days]").forEach((row) => {
           if (row.dataset.days!.split(",").map(Number).includes(today)) {
             row.dataset.today = ""

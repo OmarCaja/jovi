@@ -13,3 +13,21 @@ export const hours = [
   { label: "days.sat", time: ["16:00", "3:00"], days: [6] },
   { label: "days.sun", time: ["16:00", "2:00"], days: [0] },
 ] as const
+
+const toMinutes = (hhmm: string) => {
+  const [h, m] = hhmm.split(":").map(Number)
+  return h * 60 + m
+}
+
+// Which `days` entry the bar is serving at `now` (Madrid wall clock): before the previous
+// night's after-midnight close (Monday 01:00 under Sunday's 16:00 to 2:00) it is still that night.
+export function openingDay(now: Date) {
+  const day = now.getDay()
+  const yesterday = (day + 6) % 7
+  const night = hours.find((h) => (h.days as readonly number[]).includes(yesterday))?.time
+  const late =
+    night &&
+    toMinutes(night[1]) < toMinutes(night[0]) &&
+    now.getHours() * 60 + now.getMinutes() < toMinutes(night[1])
+  return late ? yesterday : day
+}

@@ -373,8 +373,9 @@ const ctaArrow = "transition-transform duration-300 group-hover/button:translate
                   class="flex items-baseline justify-between gap-6 text-base data-[today]:text-primary"
                 >
                   <dt>
-                    {t(h.label)}
-                    <span class="ml-1.5 hidden text-sm in-data-[today]:inline">· {t("today").toLowerCase()}</span>
+                    {t(h.label)}<span class="hidden text-sm in-data-[today]:inline"
+                      > <span class="mx-1">·</span> {t("today").toLowerCase()}</span
+                    >
                   </dt>
                   <dd class="text-muted-foreground tabular-nums in-data-[today]:text-primary">
                     {formatHours(h.time, lang)}
