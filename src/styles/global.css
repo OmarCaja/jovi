@@ -115,6 +115,54 @@
   html { scroll-behavior: auto; }
 }
 
+/* Header mark: the horse barman. The icon is white lines on solid black, used as a luminance
+   mask so the black drops out and the lines take the theme colour. Three copies are clipped to
+   body, head and tray (a 48-unit grid of the icon: tray above y 13.4 right of x 22.5, head above
+   the collar), so the greeting can nod the head and offer the tray while the drinks catch the
+   lamp. Hover, keyboard focus, and once on first load ([data-greet], set in the layout). */
+.jovi-mark {
+  position: relative;
+  display: block;
+  width: 3rem;
+  height: 3rem;
+  margin-block: 0.5rem;
+}
+.jovi-mark > span {
+  position: absolute;
+  inset: 0;
+  background: var(--foreground);
+  mask: var(--mark) center / contain no-repeat luminance;
+}
+.jovi-mark > [data-part="body"] {
+  clip-path: polygon(0 51%, 26% 51%, 26% 42.9%, 54.2% 42.9%, 54.2% 27.9%, 100% 27.9%, 100% 100%, 0 100%);
+}
+.jovi-mark > [data-part="head"] {
+  clip-path: polygon(0 0, 46.9% 0, 46.9% 27.9%, 54.2% 27.9%, 54.2% 42.9%, 26% 42.9%, 26% 51%, 0 51%);
+  transform-origin: 22% 47%; /* the throat, so the cut at the collar barely moves */
+}
+.jovi-mark > [data-part="tray"] {
+  clip-path: polygon(46.9% 0, 100% 0, 100% 27.9%, 46.9% 27.9%);
+  transform-origin: 73% 28%; /* the hand under the tray */
+  transition:
+    background-color 0.35s ease-out,
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.jovi-mark:is(:hover, :focus-visible, [data-greet]) > [data-part="tray"] {
+  background: var(--primary);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .jovi-mark:is(:hover, :focus-visible, [data-greet]) > [data-part="tray"] {
+    transform: translateY(-3%) rotate(-5deg);
+  }
+  .jovi-mark:is(:hover, :focus-visible, [data-greet]) > [data-part="head"] {
+    animation: jovi-nod 0.9s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+}
+@keyframes jovi-nod {
+  35% { transform: rotate(-6deg); }
+  70% { transform: rotate(1.2deg); }
+}
+
 /* La casa: the lamp light grows as a circle from the lamp and ends covering the whole photo.
    The light layer is a square much larger than the photo, centred on the lamp (50% 9%), so its
    circle never shows square edges while it scales; the frame's overflow clips it to the photo.
