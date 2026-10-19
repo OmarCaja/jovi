@@ -40,11 +40,11 @@ const switchHref = alternatePath(Astro.url, otherLang)
 const pageSwap = {
   forwards: {
     old: { name: "page-out", duration: "180ms", easing: "cubic-bezier(0.4, 0, 1, 1)", fillMode: "both" },
-    new: { name: "page-in", duration: "520ms", delay: "60ms", easing: "cubic-bezier(0.16, 1, 0.3, 1)", fillMode: "both" },
+    new: { name: "page-in", duration: "240ms", easing: "ease-out", fillMode: "both" },
   },
   backwards: {
     old: { name: "page-out", duration: "180ms", easing: "cubic-bezier(0.4, 0, 1, 1)", fillMode: "both" },
-    new: { name: "page-in", duration: "520ms", delay: "60ms", easing: "cubic-bezier(0.16, 1, 0.3, 1)", fillMode: "both" },
+    new: { name: "page-in", duration: "240ms", easing: "ease-out", fillMode: "both" },
   },
 }
 ---
@@ -270,7 +270,11 @@ const pageSwap = {
 
       // The router swaps <html> attributes for the new page's, which drops the "js" class
       // the inline head script added on first load. Put it back before the new page paints.
-      document.addEventListener("astro:after-swap", () => document.documentElement.classList.add("js"))
+      let navigated = false
+      document.addEventListener("astro:after-swap", () => {
+        document.documentElement.classList.add("js")
+        navigated = true
+      })
 
       // The barman greets once per visit, as the hero settles (later navigations swap in a header without it).
       const mark = document.querySelector<HTMLElement>("[data-mark]")
@@ -293,11 +297,6 @@ const pageSwap = {
       matchMedia("(min-width: 768px)").addEventListener("change", (e) => e.matches && setMenu(false))
 
       onPage(() => {
-        // Deep links (/carta/#beber): the router's smooth hash scroll starts from the previous
-        // page's scroll position, which the shorter page clamps to its bottom, and Safari can
-        // stop it there. Land on the anchor directly once the new page is in place.
-        if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: "instant" })
-
         // Today's opening hours, in Cuenca's time zone (home hours table and the mobile menu).
         const today = openingDay(new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Madrid" })))
         document.querySelectorAll<HTMLElement>("[data-days]").forEach((row) => {
@@ -362,8 +361,23 @@ const pageSwap = {
         // Motion only when the user allows it; reduced-motion users get static content (CSS never hides it for them).
         const mm = gsap.matchMedia()
         mm.add("(prefers-reduced-motion: no-preference)", () => {
-          // Hero entry (home only): sequence the message and unveil the photo.
-          if (document.querySelector("[data-hero]")) {
+          // After a client-side navigation, what is on screen rises in at once as one quick
+          // staggered sequence (the view transition only cross-fades), instead of waiting on the
+          // slower first-load hero and scroll reveals. Blocks further down still reveal on scroll.
+          if (navigated) {
+            const onScreen = gsap.utils
+              .toArray<HTMLElement>("[data-hero], [data-hero-image] img, [data-reveal]")
+              .filter((el) => el.getBoundingClientRect().top < innerHeight)
+            onScreen.forEach((el) => el.removeAttribute("data-reveal"))
+            gsap.fromTo(
+              onScreen,
+              { opacity: 0, y: 20 },
+              { opacity: 1, y: 0, duration: 0.7, stagger: 0.06, ease: "expo.out" }
+            )
+          }
+
+          // Hero entry (home only, first load): sequence the message and unveil the photo.
+          if (!navigated && document.querySelector("[data-hero]")) {
             gsap
               .timeline({ defaults: { ease: "power3.out" } })
               .fromTo(

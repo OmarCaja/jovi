@@ -4,6 +4,7 @@ import Icon from "@/components/icon.astro"
 import { ArrowLeft01Icon, ArrowRight01Icon, Cancel01Icon } from "@hugeicons/core-free-icons"
 import Layout from "@/layouts/main.astro"
 import { getLangFromUrl, getTranslations } from "@/i18n/utils"
+import { travelerUrl } from "@/lib/site"
 import horse from "@/assets/horse.jpeg"
 import terrace from "@/assets/gallery/1.jpg"
 import courtyard from "@/assets/gallery/2.jpg"
@@ -20,7 +21,7 @@ const photos = [
   { src: horse, alt: t("gallery.horse"), ratio: "aspect-[3/4]" },
   { src: courtyard, alt: t("gallery.courtyard"), ratio: "aspect-[4/5]" },
   { src: pint, alt: t("gallery.pint"), ratio: "aspect-[3/4]" },
-  { src: sandwiches, alt: t("gallery.sandwiches"), ratio: "aspect-[3/2]" },
+  { src: sandwiches, alt: t("gallery.sandwiches"), ratio: "aspect-[3/2]", credit: true },
 ]
 
 // Full-screen versions: uncropped, capped at 2000px on the long side.
@@ -51,26 +52,35 @@ const roundBtn =
     <div class="columns-1 gap-4 sm:columns-2 lg:columns-3 [&>*]:mb-4">
       {
         gallery.map((g, i) => (
-          <button
-            type="button"
-            data-reveal
-            data-open={i}
-            data-full={g.full}
-            data-alt={g.alt}
-            data-ratio={g.src.width / g.src.height}
-            aria-label={`${t("gallery.open")}: ${g.alt}`}
-            class="group block w-full cursor-zoom-in overflow-hidden focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
-          >
-            <Image
-              src={g.src}
-              alt={g.alt}
-              widths={[480, 720, 960]}
-              width={960}
-              sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
-              loading={i < 3 ? "eager" : "lazy"}
-              class={`w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03] ${g.ratio}`}
-            />
-          </button>
+          <figure data-reveal class="break-inside-avoid">
+            <button
+              type="button"
+              data-open={i}
+              data-full={g.full}
+              data-alt={g.alt}
+              data-ratio={g.src.width / g.src.height}
+              aria-label={`${t("gallery.open")}: ${g.alt}`}
+              class="group block w-full cursor-zoom-in overflow-hidden focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            >
+              <Image
+                src={g.src}
+                alt={g.alt}
+                widths={[480, 720, 960]}
+                width={960}
+                sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
+                loading={i < 3 ? "eager" : "lazy"}
+                class={`w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03] ${g.ratio}`}
+              />
+            </button>
+            {"credit" in g && (
+              <figcaption class="mt-2 text-xs text-muted-foreground">
+                {t("photoCredit")}:{" "}
+                <a href={travelerUrl} target="_blank" rel="noopener" class="underline-offset-4 transition-colors hover:text-primary hover:underline">
+                  <span translate="no">Condé Nast Traveler</span><span class="sr-only"> {t("newTab")}</span>
+                </a>
+              </figcaption>
+            )}
+          </figure>
         ))
       }
     </div>

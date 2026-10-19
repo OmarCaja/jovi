@@ -21,7 +21,7 @@ const { groups, lang, allergensLabel, labelledBy } = Astro.props
   <div
     role="tablist"
     aria-labelledby={labelledBy}
-    class="-mx-4 flex w-[calc(100%+2rem)] flex-nowrap items-center justify-start gap-x-6 overflow-x-auto border-b border-border px-4 pb-2 [scrollbar-width:none] md:mx-0 md:w-full md:flex-wrap md:gap-y-2 md:overflow-visible md:px-0 md:pb-3 [html:not(.js)_&]:hidden [&::-webkit-scrollbar]:hidden"
+    class="relative -mx-4 flex w-[calc(100%+2rem)] flex-nowrap items-center justify-start gap-x-6 overflow-x-auto border-b border-border px-4 pb-2 [scrollbar-width:none] md:mx-0 md:w-full md:flex-wrap md:gap-y-2 md:overflow-visible md:px-0 md:pb-3 [html:not(.js)_&]:hidden [&::-webkit-scrollbar]:hidden"
   >
     {
       groups.map((g, i) => (
@@ -33,12 +33,18 @@ const { groups, lang, allergensLabel, labelledBy } = Astro.props
           aria-selected={i === 0 ? "true" : "false"}
           tabindex={i === 0 ? 0 : -1}
           data-tab={g.id}
-          class="relative inline-flex min-h-11 flex-none items-center py-1 text-base font-medium whitespace-nowrap text-muted-foreground transition-colors after:absolute after:inset-x-0 after:bottom-[-5px] after:h-0.5 after:bg-primary after:opacity-0 after:transition-opacity hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none aria-selected:text-foreground aria-selected:after:opacity-100 md:min-h-0"
+          class="relative inline-flex min-h-11 flex-none items-center py-1 text-base font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none aria-selected:text-foreground md:min-h-0"
         >
           {g.label}
         </button>
       ))
     }
+    {/* One underline that slides to the selected tab; the script sets its size and position. */}
+    <span
+      data-indicator
+      aria-hidden="true"
+      class="pointer-events-none absolute top-0 left-0 h-0.5 origin-left bg-primary motion-safe:transition-[transform,width] motion-safe:duration-500 motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)]"
+    ></span>
   </div>
   {
     groups.map((g, i) => (
@@ -87,6 +93,7 @@ const { groups, lang, allergensLabel, labelledBy } = Astro.props
 </div>
 
 <script>
+  import { gsap } from "gsap"
   import { onPage } from "@/lib/page"
 
   onPage(() => {
@@ -94,11 +101,20 @@ const { groups, lang, allergensLabel, labelledBy } = Astro.props
     if (!roots.length) return
     // Deep link from the landing page: /carta/?tab=coffees opens that tab.
     const urlTab = new URLSearchParams(location.search).get("tab")
+    const cleanups: (() => void)[] = []
 
     roots.forEach((root) => {
       const tabs = [...root.querySelectorAll<HTMLButtonElement>("[data-tab]")]
       const panels = [...root.querySelectorAll<HTMLElement>("[data-panel]")]
-      const select = (id: string, focus = false) => {
+      const indicator = root.querySelector<HTMLElement>("[data-indicator]")!
+      // Sits 5px under the tab's label, following it across wrapped rows and the scrolling row on phones.
+      const place = () => {
+        const t = tabs.find((t) => t.getAttribute("aria-selected") === "true")!
+        indicator.style.width = `${t.offsetWidth}px`
+        indicator.style.transform = `translate(${t.offsetLeft}px, ${t.offsetTop + t.offsetHeight + 5}px)`
+      }
+      const select = (id: string, focus = false, animate = true) => {
+        if (panels.find((p) => p.hasAttribute("data-active"))?.dataset.panel === id) animate = false
         tabs.forEach((t) => {
           const on = t.dataset.tab === id
           t.setAttribute("aria-selected", String(on))
@@ -106,8 +122,26 @@ const { groups, lang, allergensLabel, labelledBy } = Astro.props
           if (on && focus) t.focus()
         })
         panels.forEach((p) => p.toggleAttribute("data-active", p.dataset.panel === id))
+        place()
+        // The new list deals in from just below, top to bottom; long lists cap the stagger at 0.3s.
+        const panel = panels.find((p) => p.dataset.panel === id)!
+        if (animate && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          gsap.fromTo(
+            panel.querySelectorAll("h3, li, :scope > p"),
+            { opacity: 0, y: 12 },
+            { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", stagger: { amount: 0.3 }, overwrite: true }
+          )
+        }
       }
-      if (urlTab && tabs.some((t) => t.dataset.tab === urlTab)) select(urlTab)
+      // First placement without the slide, so the underline is simply there on load.
+      indicator.style.transition = "none"
+      select(urlTab && tabs.some((t) => t.dataset.tab === urlTab) ? urlTab : tabs[0].dataset.tab!, false, false)
+      indicator.getBoundingClientRect()
+      indicator.style.transition = ""
+      // Fonts and the md breakpoint move the labels; keep the underline under them.
+      const ro = new ResizeObserver(place)
+      ro.observe(root)
+      cleanups.push(() => ro.disconnect())
 
       tabs.forEach((t, i) => {
         t.addEventListener("click", () => select(t.dataset.tab!))
@@ -120,5 +154,6 @@ const { groups, lang, allergensLabel, labelledBy } = Astro.props
         })
       })
     })
+    return () => cleanups.forEach((c) => c())
   })
 </script>

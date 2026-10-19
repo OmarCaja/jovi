@@ -1,3 +1,7 @@
+// Source of the sandwiches photo (src/assets/sandwiches.jpg) and the press quote on Home.
+export const travelerUrl =
+  "https://www.traveler.es/articulos/la-mejor-cocteleria-del-interior-de-espana-esta-en-cuenca-y-no-lo-sabias"
+
 export const mapsUrl =
   "https://www.google.com/maps/search/?api=1&query=Taberna+Jovi+Cuenca"
 

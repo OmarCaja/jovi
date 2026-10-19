@@ -28,6 +28,7 @@ export const ui = {
     "lang.switch": "Read in English",
     "nav.skip": "Saltar al contenido",
     "newTab": "(se abre en otra pestaña)",
+    "photoCredit": "Foto",
 
     "cta.menu": "Ver la carta",
     "cta.directions": "Cómo llegar",
@@ -127,6 +128,7 @@ export const ui = {
     "lang.switch": "Leer en español",
     "nav.skip": "Skip to content",
     "newTab": "(opens in a new tab)",
+    "photoCredit": "Photo",
 
     "cta.menu": "See the menu",
     "cta.directions": "Get directions",

@@ -69,7 +69,7 @@
     @apply bg-background text-foreground;
     }
   html {
-    @apply font-sans scroll-smooth;
+    @apply font-sans;
     /* Anchors and focused elements clear the fixed header, safe area included (notched iPhones). */
     scroll-padding-top: calc(4rem + env(safe-area-inset-top));
     }
@@ -110,9 +110,6 @@
   .js [data-casa-veil] { opacity: 1; }
   .js [data-lamp-glow], .js [data-lamp-bulb] { opacity: 0; }
   .js [data-lamp-copy] > * { opacity: 0.04; }
-}
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
 }
 
 /* Header mark: the horse barman. The icon is white lines on solid black, used as a luminance
@@ -211,11 +208,12 @@
   );
 }
 
-/* Page transition (ClientRouter): the old content dips out, the new one rises in.
+/* Page transition (ClientRouter): the old content dips out, the new one fades up under it.
    Astro drops view-transition animations under prefers-reduced-motion. */
 @keyframes page-out {
   to { opacity: 0; transform: translateY(-8px); }
 }
+/* Only a cross-fade: the content's own rise runs in GSAP (layout script), so motion isn't doubled. */
 @keyframes page-in {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; }
 }
