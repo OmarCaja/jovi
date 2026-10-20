@@ -33,6 +33,7 @@ const nav = [
   { href: `${home}#casa`, label: t("nav.house") },
   { href: localize("/carta"), label: t("nav.menu") },
   { href: localize("/galeria"), label: t("nav.gallery") },
+  { href: `${home}#visita`, label: t("nav.hours") },
 ]
 const switchHref = alternatePath(Astro.url, otherLang)
 
@@ -398,14 +399,13 @@ const pageSwap = {
           ScrollTrigger.batch("[data-reveal]", {
             start: "top 88%",
             once: true,
-            onEnter: (els) =>
-              gsap.to(els, {
-                opacity: 1,
-                y: 0,
-                duration: 0.9,
-                stagger: 0.1,
-                ease: "power3.out",
-              }),
+            onEnter: (els) => {
+              // An anchor jump (e.g. the hours link) enters every block it skipped at once:
+              // show those instantly so the stagger only paces what is actually on screen.
+              const passed = (el: Element) => el.getBoundingClientRect().bottom <= 0
+              gsap.set(els.filter(passed), { opacity: 1, y: 0 })
+              gsap.to(els.filter((el) => !passed(el)), { opacity: 1, y: 0, duration: 0.9, stagger: 0.1, ease: "power3.out" })
+            },
           })
         })
 
